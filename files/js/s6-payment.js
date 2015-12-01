@@ -1,0 +1,5 @@
+var step = {
+	init: function(){
+		
+	}
+};
