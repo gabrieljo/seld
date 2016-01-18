@@ -1,5 +1,0 @@
-var step = {
-	init: function(){
-		
-	}
-};
