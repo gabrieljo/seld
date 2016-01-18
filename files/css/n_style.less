@@ -1,0 +1,113 @@
+@image-border-color: #ccc;
+@intro-video-offset: -100px; 
+@canvas-border: #24B8FF;
+
+.RoundBorders(@radius) {
+	border-radius: @radius;
+	-moz-border-radius: @radius;
+	-webkit-border-radius: @radius;
+}
+
+ *{outline:none!important;}
+html,body{ height:100%!important;overflow:hiddens;font-size:14px;}
+
+@font-face{
+	font-family : agisarang;
+	src: url(../fonts/agisarang.ttf);
+}
+
+.cf{clear: both;}
+.nopadding{padding-left: 0!important;padding-right: 0!important;}
+
+body{padding:45px 0 0;}
+.n_header{
+	position: fixed; left:0; right:0; top:0; background: #fff; z-index: 20;
+	height:45px; /*border-bottom: 1px solid #ccc;*/
+	img{
+		height: 26px; margin: 8px 0 0;
+	}
+
+	ul.menu{
+		list-style: none; margin: 0; padding: 0;
+		li{
+			float: left;
+			a{
+				display: block; padding: 8px 10px; color: #333;
+			}
+		}
+	}
+}
+.n_slider{
+	.item img{
+		width: 100%; height:auto;
+	}
+}
+h1{
+	text-align: center; border-top: 2px solid #7d736f; border-bottom: 1px solid #b1aba9; color: #6d6d6d; 
+	padding: 10px 0; margin: 30px 0; font-size: 28px; font-weight: bold;
+}
+.n_container{
+	ul.thumb_list{
+		list-style: none; margin: 0; padding: 0;
+		li{
+			margin-bottom: 30px;
+			.thumb_wrapper{
+				border: 1px solid #ccc; padding: 20px 10px;
+				div{
+					overflow: hidden; height: 180px; text-align: center;
+				}
+			}
+			.thumb_desc{color:#777;padding: 10px 0 4px;border-bottom: 1px solid #bbb;font-size: 12px;}
+			.thumb_author{color:#aaa;padding: 4px 0;font-size:11px;}
+		}
+	}
+
+	.n_featured{
+		padding:20px 50px; background: #b0b0b0;
+		.col-sm-4{
+			text-align: center;
+		}
+		h2{
+			color:#6d6d6d; font-size: 20px; font-weight: bold;
+		}
+		.desc{
+			font-size: 16px; color: #777; font-weight: bold;
+		}
+	}
+}
+.n_separator{
+	background: transparent url(../img/n/sep.jpg) repeat-x; height: 20px; margin: 30px 0;
+}
+.n_bottom{
+	h3{
+		font-size:16px; font-weight: bold; margin: 0; padding: 0;
+	}
+	.number{
+		padding: 15px 0 20px; font-size: 22px;
+	}
+	.hours{
+		font-size: 11px; color: #888;
+	}
+}
+.n_footer{
+	margin: 30px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; 
+	.menu{
+		margin: 0; padding: 0; list-style: none;
+		li{
+			float: left;
+			a{
+				display: block; padding: 8px 18px; font-size: 11px; color: #555;
+			}
+			a:hover{
+				font-weight: bold; text-decoration: none;
+			}
+		}
+		li:after{
+			content:"|"; position: absolute;   margin: -27px 0 0; color: #ccc;
+		}
+		li:first-child:after{
+			content:"";
+		}
+	}
+	a.toplink{font-size: 12px;text-transform: uppercase;color:#888;text-decoration: none;margin-top: 6px;}
+}

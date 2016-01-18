@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+<style>
+#sam-c{width: 220px;height:120px;border: 1px solid #ccc;background: #ff0;overflow: hidden;}
+ul#sam{margin:0;padding:0;list-style:none;width:1000px;}
+ul#sam li{float:left;width:150px;height:80px;margin:0 20px 0 0px;}
+ul#sam li div.ab{width:150px;height:80px;margin: 20px 0 20px 20px;background: #444;color:#fff;font:18px/80px Arial;text-align: center;}
+</style>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-5 col-sm-offset-3">
+			<div id="sam-c">
+				<ul id="sam">
+					<li>
+						<div class="ab">C1</div>
+					</li>
+					<li>
+						<div class="ab">C2</div>
+					</li>
+					<li>
+						<div class="ab">C3</div>
+					</li>
+					<li>
+						<div class="ab">C4</div>
+					</li>
+					<li>
+						<div class="ab">C5</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$('ul#sam li .ab').click(function(){
+		var o = $(this);
+		var degree = 0, timer;
+		rotate(o, degree, timer);
+		o.css('position', 'absolute').animate({
+			marginTop: '-100px',
+			marginLeft: '-50px',
+			opacity: 0
+		}, 500, function(){
+			o.parent().remove();
+		});
+	});
+});
+function rotate(elie, degree, timer){    
+    elie.css({ WebkitTransform: 'rotate(' + degree + 'deg)'});  
+    elie.css({ '-moz-transform': 'rotate(' + degree + 'deg)'});                      
+    timer = setTimeout(function() {
+        --degree; rotate(elie, degree, timer);
+    }, 1);
+} 
+</script>
+	
+</body>
+</html>
