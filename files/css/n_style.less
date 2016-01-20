@@ -1,12 +1,15 @@
 @image-border-color: #ccc;
 @intro-video-offset: -100px; 
 @canvas-border: #24B8FF;
+@main-color: #b7dcf0;
 
 .RoundBorders(@radius) {
 	border-radius: @radius;
 	-moz-border-radius: @radius;
 	-webkit-border-radius: @radius;
 }
+
+.main-color{color:@main-color;}
 
  *{outline:none!important;}
 html,body{ height:100%!important;overflow:hiddens;font-size:14px;}
@@ -18,35 +21,50 @@ html,body{ height:100%!important;overflow:hiddens;font-size:14px;}
 
 .cf{clear: both;}
 .nopadding{padding-left: 0!important;padding-right: 0!important;}
+.hover-underline{ display:none;width: 100%;height: 10px; background: #b7dcf0;border-radius: 50px; bottom: -5px; position: relative;}
 
 body{padding:45px 0 0;}
 .n_header{
-	position: fixed; left:0; right:0; top:0; background: #fff; z-index: 20;
-	height:45px; /*border-bottom: 1px solid #ccc;*/
+	position: fixed; left:0; right:0; top:0; background: #fff; z-index: 20;border-bottom:1px solid #ddd;
+	height:88px; padding:20px 0;/*border-bottom: 1px solid #ccc;*/
 	img{
-		height: 26px; margin: 8px 0 0;
+		margin: 8px 0 0;
+	}
+	#deco-top-line{ height: 20px; background: #b7dcf0; border-radius: 0 0 20px 20px; position: relative; top: -20px;width: 100%;}
+	ul.menu{
+		list-style: none; margin: 0; padding: 0;display: flex;justify-content: space-between;
+		li{
+			float: left; float: left;
+			a{
+				display: block; padding: 8px 10px; color: #333;font-size:16px;text-decoration:none;
+			}
+		}
+
+		li:hover{.hover-underline{display:block;}}
 	}
 
-	ul.menu{
-		list-style: none; margin: 0; padding: 0;
+	ul.user-menu{
+		list-style:none;
 		li{
-			float: left;
-			a{
-				display: block; padding: 8px 10px; color: #333;
+			float:left; margin-right:10px; 
+			a{    
+				padding: 2px; background: #d1c8eb;  border-radius: 2px;  color: #fff; font-size:12px;text-decoration:none;width:52;
 			}
 		}
 	}
 }
 .n_slider{
+	border-bottom:1px solid #ddd;
 	.item img{
-		width: 100%; height:auto;
+		width: 100%; height:400px;
 	}
 }
 h1{
-	text-align: center; border-top: 2px solid #7d736f; border-bottom: 1px solid #b1aba9; color: #6d6d6d; 
+	text-align: center; color: #6d6d6d; 
 	padding: 10px 0; margin: 30px 0; font-size: 28px; font-weight: bold;
 }
 .n_container{
+	margin-top:20px;
 	ul.thumb_list{
 		list-style: none; margin: 0; padding: 0;
 		li{
@@ -74,9 +92,45 @@ h1{
 			font-size: 16px; color: #777; font-weight: bold;
 		}
 	}
+
+	.best-item, .best-review-item, .hot-itmes{border: 1px solid #ddd; border-radius: 5px; padding: 10px; min-height:287px;}
+	.best-review-item{
+		img{width:100%;margin-bottom:10px;}
+		.item-detail{
+			.item-title{font-size:16px;font-weight:bold;}
+			.item-price{font-size:14px;font-weight:bold;}
+		}
+	}
+
+	.hot-itmes{ 
+		img{float:left}
+		.hot-item-first{width:340px;margin-right:15px;
+			.ribbon{position:absolute;}
+			.item-title{font-size:20px;font-weight:bold;}
+		}
+
+		.hot-item-others{.row{margin:0;}
+
+			.hot-item-second{    margin-bottom: 5px;  border-bottom: 1px dashed #6d6d6d; padding-bottom: 5px;}
+		}
+			
+		.item-detail{text-align:center;}
+	}
+
+	.best-item{background-image:url('../img/example/best-item.jpg'); background-repeat:no-repeat;    background-position: right bottom;}
+
+	.seld-menu{
+		margin-top:20px;
+		.menu-btns a{text-decoration:none; color:#6d6d6d}
+		.sub-menu-title{padding: 15px;font-size:15px; font-weight:bold;}
+		.menu-btn{ border: 1px solid #ddd; border-radius:10px; text-align: center;    padding: 20px;
+			img{ .RoundBorders(50%); margin-bottom:15px; }
+			.menu-title{font-weight:bold;font-size:20px;}
+		}
+	}
 }
 .n_separator{
-	background: transparent url(../img/n/sep.jpg) repeat-x; height: 20px; margin: 30px 0;
+	background: transparent url(../img/n/sep.jpg) repeat-x; height: 20px; margin: 30px 0; 
 }
 .n_bottom{
 	h3{
@@ -110,4 +164,13 @@ h1{
 		}
 	}
 	a.toplink{font-size: 12px;text-transform: uppercase;color:#888;text-decoration: none;margin-top: 6px;}
+}
+
+.n_slider{
+	.carousel-caption{
+		color:#000;text-align:right;text-shadow:none;
+		.caption-title{font-size:18px;}
+		.caption-content{font-size:42px;}
+		.caption-desc{font-size:18px;}
+	}
 }
