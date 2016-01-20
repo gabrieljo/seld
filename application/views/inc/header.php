@@ -20,9 +20,8 @@ $navs = array(
 	// Load all CSS/JS framework
 	$load = array(
 				'bootstrap.min.css',
-				'style.css',
+				'n_style.css',
 				'jquery.js',
-				'jquery.mousewheel.js',
 				'bootstrap.min.js',
 				'seld.js'
 			);
@@ -36,13 +35,13 @@ $navs = array(
 </head>
 <body>
 
-<div class="header">
+<div class="n_header">
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-4">
 				<?=anchor('', '<h1>'. inc('logo.png') . '</h1>')?>
 			</div>
-			<div class="col-xs-8">
+			<div class="col-xs-6">
 				<ul class="nav pull-right">
 				<?php
 				$cur = $this->uri->segment(1).'/'.$this->uri->segment(2);
@@ -57,6 +56,12 @@ $navs = array(
 					echo '<li role="presentation" ' . $cls . '>' . anchor($k, $v) . '</li>';
 				endforeach;
 				?>
+				</ul>
+			</div>
+			<div class="col-xs-2">
+				<ul>
+					<li>로그인</li>
+					<li>회원가입</li>
 				</ul>
 			</div>
 		</div>

@@ -5,8 +5,12 @@ $title = isset($title) ? $title : SITE_TITLE;
 $navs = array(
 			/*base_url() 			=> 'Home',
 			'p/about/SelD' 		=> 'About Us',
-			'p/contact'			=> 'Contact',*/
-			'p/login'			=> 'Login'
+			'p/contact'			=> 'Contact',
+			'p/login'			=> 'Login'*/
+			'p/login' 	=> 'SELD 하기',
+			'p/about' 	=> '둘러보기',
+			'p/market'	=> 'SELD 마켓',
+			'p/order' 	=> 'SELD 의뢰하기',
 		);
 ?>
 <!DOCTYPE html>
@@ -37,15 +41,36 @@ $navs = array(
 
 <div class="n_header">
 	<div class="container">
+		
 		<div class="row">
-			<div class="col-sm-12">
-				<?=inc('logox.png')?>
-
-				<ul class="pull-right menu">
-					<li><?=anchor('p/login', '디자인하기')?></li>
-					<li><a href="#">템플릿</a></li>
-					<li><a href="#">둘러보기</a></li>
-					<li><a href="#">고객지원</a></li>
+			<div class="col-xs-3">
+				<?=anchor('', inc('main/logo.png'))?>
+			</div>
+			<div class="col-xs-6">
+			<div id="deco-top-line"></div>
+			<div>
+				<ul class="menu">
+				<?php
+				$cur = $this->uri->segment(1).'/'.$this->uri->segment(2);
+				foreach ($navs as $k=>$v):
+					$cls = '';
+					if ($cur == '/'){
+						$cls = $v == 'Home' ? 'class="active"' : '';
+					}
+					else{
+						$cls = strpos($k, $cur) !== false ? 'class="active"' : '';
+					}
+					echo '<li role="presentation" ' . $cls . '>' . anchor($k, $v) . '<div class="hover-underline"></div></li>';
+				endforeach;
+				?>
+				</ul>
+			</div>
+				
+			</div>
+			<div class="col-xs-3">
+				<ul class="user-menu">
+					<li><a href="#">로그인</a> </li>
+					<li><a href="#">회원가입</a></li>
 				</ul>
 			</div>
 		</div>
