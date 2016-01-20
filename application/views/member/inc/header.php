@@ -36,14 +36,14 @@ $title = isset($title) ? $title : SITE_TITLE;
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<?=anchor('u', inc('logox.png'), array('class'=>'navbar-brand'))?>
+		<?=anchor('m', inc('logox.png'), array('class'=>'navbar-brand'))?>
 	</div>
 
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		<ul class="nav navbar-nav">
 			<li>
-				<?=anchor('u/list_designs', 'My Designs')?>
+				<?=anchor('m/designs', 'My Designs')?>
 			</li>
 		</ul>
 		<?php

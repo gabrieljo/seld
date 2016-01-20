@@ -2,7 +2,7 @@
 
 /**
  * SELD Creative Editor
- * @author  	Sudarshan Shakya
+ * @author  	Sudarshan Shakya 
  * @date 		2015-12-31
  * @version 	1.2
  * 
@@ -20,12 +20,10 @@ $inc = array(
 			'ui/jquery-ui.theme.min.css',
 			'bootstrap-colorpicker.min.js',
 			'bootstrap-colorpicker.min.css',
-			's4-canvas.classes.js',
+			'seld/canvas.classes.js',
 			'jquery.hotkeys.js',
 			'jquery.upload.js'
 		);
-echo inc($inc);
-
 
 /**
  * Prepare backend container for holding Design pages contents
@@ -34,7 +32,7 @@ echo inc($inc);
  * 		whichever superceeds and is available.
  */
 $contents 	= $product->pr_status == 'new' ? ($product->pr_th_id == 0 ? '' : $theme->d_th_contents) : $product->pr_contents;
-$total_pages= $prop['page'];// * $prop['face'];
+$total_pages= $canvas->page;
 
 
 /**
@@ -98,10 +96,17 @@ for ($i=0; $i<count($tools); $i++){
 	}
 }
 
-
+/**
+ * load header and files.
+ */
+include('inc/header.php');
+echo inc($inc); 
 ?>
+
+<div class="article"><div id="body-wrapper">
+
 <div id="editor_wrapper">
-	<div id="design-pages" class="hidden" data-width="<?=intval($paper->d_sz_width)?>" data-height="<?=intval($paper->d_sz_height)?>" data-faces="<?=$prop['face']?>" data-pages="<?=$prop['page']?>" data-ref="<?=$product->pr_uid?>" data-total="<?=$total_pages?>"><?=$contents?></div>
+	<div id="design-pages" class="hidden" data-width="<?=intval($paper->d_sz_width)?>" data-height="<?=intval($paper->d_sz_height)?>"  data-pages="<?=$canvas->page?>" data-ref="<?=$product->pr_uid?>"><?=$contents?></div>
 
 	<div id="editor_menu">
 		<div id="design-tools-wrapper">
@@ -121,13 +126,11 @@ for ($i=0; $i<count($tools); $i++){
 	<div id="editor_properties">
 		<div class="head">
 			<button id="saveCanvas" class="btn btn-primary btn-sm dTool" data-type="save"><span class="glyphicon glyphicon-floppy-disk"></span></button>
-			<!-- <button class="btn btn-success btn-sm" id="saveimagebutton"><span class="glyphicon glyphicon-star"></span></button> -->
-			<?=anchor('u/create/' . $product->pr_uid . '/settings', '<span class="glyphicon glyphicon-cog"></span> Settings', array('class'=>'btn btn-danger btn-sm pull-right'))?>
 			<div class="cf"></div>
 		</div>
 
 		<div class="section" id="top_section">
-			<?php include('./application/views/inc/m_editor_options.php') ?>
+			<?php include('./application/views/member/inc/editor_options.php') ?>
 		</div><!-- .section#top -->
 
 		<div id="copyright">
@@ -135,7 +138,7 @@ for ($i=0; $i<count($tools); $i++){
 		</div>
 	</div><!-- #editor_properties -->
 
-	<?php include('./application/views/inc/m_editor_footer.php') ?>
+	<?php include('./application/views/member/inc/editor_footer.php') ?>
 </div><!-- #editor_wrapper -->
 
 <div class="hidden" id="layer_overlay">
@@ -156,31 +159,10 @@ for ($i=0; $i<count($tools); $i++){
 	</div>
 </div>
 
-<div id="loading_page" class="hidden">
-	
-</div>
+<div id="loading_page" class="hidden"></div>
 
 <!-- Notification for clearing user changes! -->
-<div class="modal fade" id="myModalReset" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog modal-sm" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Discard Changes?</h4>
-			</div>
-			<div class="modal-body">
-				<p class="text-danger">
-					<strong><span class="glyphicon glyphicon-info-sign"></span> Are you sure you want to discard your changes? </strong><br>
-					This will remove all your changes and reset the theme.
-				</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="button" id="confirm_pad_reset" class="btn btn-danger">Confirm Reset</button>
-			</div>
-		</div>
-	</div>
-</div>
+
 
 <!-- Image List Options -->
 <div class="modal fade" id="imageListModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="true">
@@ -197,8 +179,8 @@ for ($i=0; $i<count($tools); $i++){
 						/**
 						 * LOAD ALL THE CLIENT'S IMAGES
 						 */
-						$folder = './files/uploads/'.$folder.'/thumbs/';
-						foreach(glob($folder.'*') as $filename){
+						$folder = './files/products/'.$product->pr_uid.'/thumbs/';
+						foreach (glob($folder.'*') as $filename){
 							$img = basename($filename);						
 							if ($img == 'index.html'){ continue; }
 
@@ -209,7 +191,7 @@ for ($i=0; $i<count($tools); $i++){
 						}
 						?>
 					</ul>
-					<div class="cf"></div>					
+					<div class="cf"></div>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -232,6 +214,90 @@ for ($i=0; $i<count($tools); $i++){
 							<div class="text-center text-danger"><span class="glyphicon glyphicon-ok"></span> Click here to select!</div>
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div></div><!-- .article.body-wrapper -->
+
+<?php
+
+echo inc("seld/canvas.js");
+
+if ($product->pr_status == 'new'){
+	echo '<script>$(step.initCreate)</script>';
+}
+else{
+	echo '<script>$(step.init)</script>';
+}
+
+include('inc/footer.php');
+?>
+
+<!-- File Info -->
+<div class="canvas_file_info overlay hidden"></div>
+<div class="canvas_file_info wrapper hidden">	
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12">
+				<h3><span class="glyphicon glyphicon-cog"></span> File Settings</h3>
+				<div class="form-horizontal hidden" id="file_info_save_btn">
+					<div class="form-group">
+						<label for="canvas_title" class="col-sm-3 control-label"><span class="text-danger">*</span>Title</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" id="canvas_title" placeholder="File Name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputPassword3" class="col-sm-3 control-label">Description</label>
+						<div class="col-sm-7">
+							<textarea name="canvas_description" id="canvas_description" cols="30" rows="4" class="form-control" placeholder="File Description"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label"></label>
+						<div class="col-sm-7">
+							<button type="button" id="btnupdate_file_info" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-floppy-disk"></span> Update</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!-- .row -->
+		<div class="row" id="canvas_file_options">
+			<div class="col-xs-12">
+				<div class="mycol active" id="mycol-type">
+				 	<h3>Select Type</h3>
+				 	<div class="mycol-container">
+				 		<ul id="file_design_type">
+				 			<?php
+				 			foreach ($d_types->result() as $item){
+				 			?>
+				 				<li data-ref="<?=$item->d_pr_id?>">
+				 					<?=inc('design/' . $item->d_pr_image, array('class'=>'product-img'))?>
+				 					<h4><?=$item->d_pr_name?></h4>
+									<p class="text-primary"><?=$item->d_pr_description?></p>
+								</li>
+				 			<?php
+				 			}
+				 			?>
+				 		</ul>
+				 	</div>
+				</div>
+				<div class="mycol" id="mycol-options">
+					<h3>Options</h3>
+					<form action="" id="frm_canvas_options">
+						<div class="mycol-container">
+					 		<small>Select Type!</small>
+					 	</div>
+					 </form>
+				</div>
+				<div class="mycol full hidden" id="mycol-themes">
+					<h3>Themes <button class="btn btn-danger btn-xs pull-right"><span class="glyphicon glyphicon-menu-left" id="btn-back-type" title="Go Back"></span></button></h3>
+				 	<div class="mycol-container">
+				 		<small>Not available.</small>
+				 	</div>
 				</div>
 			</div>
 		</div>

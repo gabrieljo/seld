@@ -13,7 +13,6 @@
 			</li>
 			<?php
 			// Display option only if more than one page available.
-			$total_pages = $prop['page'] * $prop['face'];
 			if ($total_pages > 1){
 			?>
 			<li class="canvas-options">

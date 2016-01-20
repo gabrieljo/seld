@@ -1,10 +1,10 @@
-<?php include('inc/m_header.php') ?>
+<?php include('inc/header.php') ?>
 
 <?=inc('m_list.js')?>
 
 <div class="col-md-12">
 	<h3 class="pull-left">My Designs</h3>
-	<?=anchor('u/create', '<span class="glyphicon glyphicon-plus"></span> Create New', array('class'=>'btn btn-lg pull-right btn-sm btn-success'))?>
+	<?=anchor('m/create', '<span class="glyphicon glyphicon-plus"></span> Create New', array('class'=>'btn btn-lg pull-right btn-sm btn-success'))?>
 	<div class="cf"></div>
 	<hr>
 	<table class="table table-bordered table-hover">
@@ -64,10 +64,10 @@
 				</td>
 				<td>
 					<?php
-						echo anchor('m/create/' . $product->pr_uid . '/canvas', '<span class="glyphicon glyphicon-folder-open"></span> Open ', array('class'=>'btn btn-xs btn-primary'));
+						echo anchor('m/create/' . $product->pr_uid, '<span class="glyphicon glyphicon-folder-open"></span> Open ', array('class'=>'btn btn-xs btn-primary'));
 						echo '&nbsp;';
 						if ($product->pr_options != '' && $product->pr_options != 'new'){
-							//echo anchor('u/preview/' . $product->pr_uid, ' <span class="glyphicon glyphicon-eye-open"></span> PDF ', array('target'=>'_blank', 'class'=>'btn btn-xs btn-warning'));							
+							// do something.
 						}
 					?>
 				</td>
@@ -85,4 +85,4 @@
 
 <script>$(design.init)</script>
 
-<?php include('inc/m_footer.php') ?>
+<?php include('inc/footer.php') ?>

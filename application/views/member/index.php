@@ -1,4 +1,4 @@
-<?php include('inc/m_header.php') ?>
+<?php include('inc/header.php') ?>
 
 <div class="col-sm-3">
 	<h3>마이페이지</h3>
@@ -15,4 +15,4 @@
 	<?=anchor('m/designs', 		'내가 저장한 디자인', 	array('class'=>'btn btn-primary'))?>
 </div>
 
-<?php include('inc/m_footer.php') ?>
+<?php include('inc/footer.php') ?>
