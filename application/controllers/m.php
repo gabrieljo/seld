@@ -24,7 +24,7 @@ class M extends CI_Controller {
     }
 
     /**
-     * this will display member dashboard page.
+     * this will display member dashboard page. 
      */
     public function index(){
 
