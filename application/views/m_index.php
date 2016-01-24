@@ -1,18 +1,34 @@
-<?php include('inc/m_header.php') ?>
+<?php include('inc/n_header.php') ?>
 
-<div class="col-sm-3">
-	<h3>마이페이지</h3>
-	<div class="box">
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque erat arcu, bibendum quis purus eu, ullamcorper malesuada quam.
+<div class="user-page">
+	<div class="container">
+		<div>
+		  <!-- Nav tabs -->
+		  <ul class="main-tab-menu nav nav-tabs" role="tablist">
+		    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab"><div class="circle"><i class="fa fa-home" style="color:#22c222"></i></div></a></li>
+		    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab"><div class="circle"><i class="fa fa-user" style="color:#febe29"></i></div></a></li>
+		    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab"><div class="circle"><i class="fa fa-gift" style="color:#3e5e9a"></i></div></a></li>
+		    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab"><div class="circle"><i class="fa fa-commenting-o" style="color:#f1685e"></i></div></a></li>
+		  </ul>
+
+		  <!-- Tab panes -->
+		  <div class="tab-content">
+		    <div role="tabpanel" class="tab-pane active" id="home">
+		    	<?php $this->load->view('partials/mypage_home')?>			    
+		    </div>
+		    <div role="tabpanel" class="tab-pane" id="profile">
+		    	<?php $this->load->view('partials/mypage_profile')?>
+		    </div>
+		    <div role="tabpanel" class="tab-pane" id="messages">
+		    	<?php $this->load->view('partials/mypage_market')?>
+		    </div>
+		    <div role="tabpanel" class="tab-pane" id="settings">...</div>
+		  </div>
+
+		</div>
+
+
 	</div>
 </div>
 
-<div class="col-sm-9">
-	<h2>디자인을 내손으로</h2>	
-	<hr>
-	<?=anchor('m/create', 		'디자인 하기', 		array('class'=>'btn btn-success'))?> 	<br><br><br>
-	<?=anchor('m/create', 		'내가 주문한 디자인', 	array('class'=>'btn btn-info'))?> 		<br><br><br>
-	<?=anchor('m/designs', 		'내가 저장한 디자인', 	array('class'=>'btn btn-primary'))?>
-</div>
-
-<?php include('inc/m_footer.php') ?>
+<?php include('inc/n_footer.php') ?>

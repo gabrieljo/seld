@@ -19,8 +19,8 @@ class M extends CI_Controller {
 
 		parent::__construct();
 
-        $id             = check_member_login();
-        $this->client   = $this->client_model->findById($id);
+        // $id             = check_member_login();
+        // $this->client   = $this->client_model->findById($id);
     }
 
     /**
@@ -28,7 +28,8 @@ class M extends CI_Controller {
      */
     public function index(){
 
-        $data['title']  = sprintf('Member Dashboard :: %s %s', $this->client->cl_firstname, $this->client->cl_lastname);
+        $data['title']  = "test"; //sprintf('Member Dashboard :: %s %s', $this->client->cl_firstname, $this->client->cl_lastname);
+
         $this->load->view('m_index', $data);
     }
 

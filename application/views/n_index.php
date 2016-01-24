@@ -123,7 +123,7 @@
 						<div class="menu-btn seld-upload">
 							<?=inc('example/seld-design-2.jpg')?>
 							<div class="menu-detail">
-								<div class="menu-title">SELD 템플릿 보기</div>
+								<div class="menu-title">SELD 마켓 보기</div>
 								<div class="menu-desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</div>
 							</div>
 						</div>
@@ -134,7 +134,7 @@
 						<div class="menu-btn seld-market">
 							<?=inc('example/seld-design-3.jpg')?>
 							<div class="menu-detail">
-								<div class="menu-title">SELD 템플릿 보기</div>
+								<div class="menu-title">업로드 디자인 보기</div>
 								<div class="menu-desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</div>
 							</div>
 						</div>
