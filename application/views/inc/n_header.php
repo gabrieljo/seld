@@ -24,7 +24,9 @@ $navs = array(
 	// Load all CSS/JS framework
 	$load = array(
 				'bootstrap.min.css',
+				'font-awesome.min.css',
 				'n_style.css',
+				
 				'jquery.js',
 				'bootstrap.min.js',
 				'seld.js'
@@ -69,7 +71,7 @@ $navs = array(
 			</div>
 			<div class="col-xs-3">
 				<ul class="user-menu">
-					<li><a href="#">로그인</a> </li>
+					<li><a href="p/login">로그인</a> </li>
 					<li><a href="#">회원가입</a></li>
 				</ul>
 			</div>
