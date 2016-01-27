@@ -61,10 +61,32 @@ class P extends CI_Controller {
             // DB Check
             $user = $this->client_model->validate($form['cl_email'], $form['cl_password']);
             if ($user == null){
-                $msg = '<p class="text-danger text-center">Username/Password does not match!</p>';
+
+                /**
+                 * Check for ADMIN LOGIN
+                 */
+                $user = $this->user_model->validate($form['cl_email'], $form['cl_password']);
+                if ($user == null){
+                    $msg = '<p class="text-danger text-center">Username/Password does not match!</p>';
+                }
+                else{
+                    // Admin Login successful.
+                    set_cookie(array('name'=>APP_ADMIN.'_admin', 'value'=>$user->usr_uid, 'expire'=>SESSION));
+
+                    // Log Time
+                    $log = array(
+                            'usr_last_login' => date('Y-m-d H:i:s'),
+                            'usr_last_ip'    => $_SERVER['REMOTE_ADDR']
+                        );
+                    $this->user_model->save($log, $user->usr_uid);
+                    
+                    // redirect to member's (client) dashboard
+                    redirect('a', 'refresh');
+                }
             }
             else{
                 set_cookie(array('name'=>APP_MEMBER.'_member', 'value'=>$user->cl_uid, 'expire'=>SESSION));
+
                 // Log Time
                 $log = array(
                         'cl_last_login' => date('Y-m-d H:i:s'),

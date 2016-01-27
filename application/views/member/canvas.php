@@ -30,9 +30,13 @@ $inc = array(
  * 
  * User saved design contents for all pages or theme default
  * 		whichever superceeds and is available.
+ *
+ * Total Pages is depends if the canvas type is "leaflet" and on number of
+ *   	folding lines.
+ * Canvas->type = 2 means type Leaflet.
  */
-$contents 	= $product->pr_status == 'new' ? ($product->pr_th_id == 0 ? '' : $theme->d_th_contents) : $product->pr_contents;
-$total_pages= $canvas->page;
+$contents 		= $product->pr_status == 'new' ? ($product->pr_th_id == 0 ? '' : $theme->d_th_contents) : $product->pr_contents;
+$total_pages 	= intval($canvas->type) == 2 ? ($canvas->page * ($canvas->fold + 1)) : $canvas->page;
 
 
 /**
@@ -42,15 +46,11 @@ $total_pages= $canvas->page;
  * Tools is an array of ("TYPE", "TITLE", "VALUE").
  */
 $tools = array();
-/*$tools[] = array(	'save', 
-					'Save Design (Ctrl+S)', 
-					'<span class="glyphicon glyphicon-floppy-disk"></span>'
-				);
-$tools[] = array('seperator');*/
+
 $tools[] = array(	'text', 
 					'Insert Text (Ctrl+E)', 
 					//'<span class="glyphicon glyphicon glyphicon-text-width"></span>',
-					inc('icon-text.png', array('style'=>'width:100%;height:100%;')),
+					inc('icon-text.png', array('style'=>'width:100%;height:auto;')),
 					''
 				);
 $tools[] = array(	'image', 
@@ -61,7 +61,7 @@ $tools[] = array(	'image',
 $tools[] = array(	'shape', 
 					'Insert Shape', 
 					//'<span class="glyphicon glyphicon-stop"></span>',
-					inc('icon-shape.png', array('style'=>'width:100%;height:100%;')),
+					inc('icon-shape.png', array('style'=>'width:100%;height:auto;')),
 					''
 				);
 $tools[] = array('seperator');
@@ -106,7 +106,7 @@ echo inc($inc);
 <div class="article"><div id="body-wrapper">
 
 <div id="editor_wrapper">
-	<div id="design-pages" class="hidden" data-width="<?=intval($paper->d_sz_width)?>" data-height="<?=intval($paper->d_sz_height)?>"  data-pages="<?=$canvas->page?>" data-ref="<?=$product->pr_uid?>"><?=$contents?></div>
+	<div id="design-pages" class="hidden" data-width="<?=$canvas->width?>" data-height="<?=$canvas->height?>"  data-pages="<?=$canvas->page?>" data-fold="<?=$canvas->fold?>" data-orientation="<?=$canvas->orientation?>" data-ref="<?=$product->pr_uid?>" data-type="<?=$canvas->type?>"><?=$contents?></div>
 
 	<div id="editor_menu">
 		<div id="design-tools-wrapper">
@@ -125,7 +125,8 @@ echo inc($inc);
 
 	<div id="editor_properties">
 		<div class="head">
-			<button id="saveCanvas" class="btn btn-primary btn-sm dTool" data-type="save"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+			<button id="openInfo" class="btn btn-primary btn-sm dTool" data-type="info" title="File information settings (Ctrl+I)"><span class="glyphicon glyphicon-cog"></span> Settings</button>
+			<button id="saveCanvas" class="btn btn-success btn-sm dTool" data-type="save" title="Save Changes (Ctrl+S)"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
 			<div class="cf"></div>
 		</div>
 
@@ -180,6 +181,7 @@ echo inc($inc);
 						 * LOAD ALL THE CLIENT'S IMAGES
 						 */
 						$folder = './files/products/'.$product->pr_uid.'/thumbs/';
+						$total 	= 0;
 						foreach (glob($folder.'*') as $filename){
 							$img = basename($filename);						
 							if ($img == 'index.html'){ continue; }
@@ -188,9 +190,16 @@ echo inc($inc);
 							$orig_path = str_replace('thumbs/', '', $filename);
 							list($width, $height) = getimagesize($orig_path);
 						    echo '<li><div class="img-wrapper"><img src="'. base_url() . $filename . '" data-width="'. $width . '" data-height="'. $height . '" /></div></li>';
+
+						    $total++;
 						}
 						?>
 					</ul>
+					<?php
+					if ($total == 0){
+						echo '<h3 class="text-danger text-center" id="no_img_uploaded">No image uploaded!</h3>';
+					}
+					?>
 					<div class="cf"></div>
 				</div>
 			</div>
@@ -242,18 +251,21 @@ include('inc/footer.php');
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12">
-				<h3><span class="glyphicon glyphicon-cog"></span> File Settings</h3>
+				<h3>
+					<span class="glyphicon glyphicon-cog"></span> File Info Settings 
+					<button type="button" class="close hidden" title="Close" id="btn_file_info_settings_close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</h3>
 				<div class="form-horizontal hidden" id="file_info_save_btn">
 					<div class="form-group">
 						<label for="canvas_title" class="col-sm-3 control-label"><span class="text-danger">*</span>Title</label>
 						<div class="col-sm-4">
-							<input type="text" class="form-control" id="canvas_title" placeholder="File Name">
+							<input type="text" class="form-control" id="canvas_title" placeholder="File Name" value="<?=$product->pr_title?>">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="inputPassword3" class="col-sm-3 control-label">Description</label>
 						<div class="col-sm-7">
-							<textarea name="canvas_description" id="canvas_description" cols="30" rows="4" class="form-control" placeholder="File Description"></textarea>
+							<textarea name="canvas_description" id="canvas_description" cols="30" rows="4" class="form-control" placeholder="File Description"><?=$product->pr_description?></textarea>
 						</div>
 					</div>
 					<div class="form-group">
@@ -303,3 +315,12 @@ include('inc/footer.php');
 		</div>
 	</div>
 </div>
+
+<div class="canvas_status_saving hidden text-center">
+	<?=inc('loading.gif')?>
+	<h3 class="text-primary">Exporting Design...</h3>
+	Please Wait!
+</div>
+
+<div class="canvas_pages_view overlay hidden"></div>
+<div class="canvas_pages_view wrapper hidden"><ul id="canvas_pages"></ul><div class="cf"></div></div>

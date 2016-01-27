@@ -86,7 +86,7 @@ if ( ! function_exists('get_cookie'))
  *
  * @param	mixed
  * @param	string	the cookie domain.  Usually:  .yourdomain.com
- * @param	string	the cookie path
+ * @param	string	the cookie path 
  * @param	string	the cookie prefix
  * @return	void
  */
@@ -116,7 +116,7 @@ if ( ! function_exists('check_admin_login'))
 	function check_admin_login()
 	{
 		$id = get_cookie(APP_ADMIN.'_admin');
-		(!$id) && redirect('apanel/login');
+		(!$id) && redirect('p/login');
 		return $id;
 	}
 }

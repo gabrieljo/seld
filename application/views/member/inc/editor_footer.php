@@ -10,6 +10,14 @@
 			for ($i=1; $i<=$total_pages; $i++){
 				$options[''.$i] = 'Page '.$i;
 			}
+
+			if ($total_pages > 1){
+		?>
+			<li class="canvas_pagination" data-type="next" title="Next Page (Alt+Right)"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-right"></span></button></li>
+			<li class="canvas_pagination" data-type="prev" title="Previous Page (Alt+Left)"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span></button></li>
+			<li class="canvas_pagination" data-type="view" title="View Pages (Alt+v)"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-th"></span></button></li>
+		<?php
+			}
 		?>
 			<li title="Current Page"><?=form_dropdown('seldpage-number', $options, 1, 'id="seldpage-number"')?></li>
 		<?php

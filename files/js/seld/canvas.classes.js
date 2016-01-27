@@ -210,7 +210,6 @@ SeldPage.prototype.contains = function(mx, my){
  * assigned to the object.
  */
 SeldPage.prototype.options = function(){
-
 	$('#seldCanvas-bgColor').val(this.bgColor);
 }
 
@@ -1017,6 +1016,14 @@ function CanvasState(canvas, w, h){
 				return;
 			}
 		}
+
+		/**
+		 * if nothing selected, clear
+		 */
+		if (myState.selection){
+			myState.selection = null;
+			myState.valid = false;
+		}
 		
 	}, true);
 	
@@ -1079,8 +1086,9 @@ function CanvasState(canvas, w, h){
 			}
 
 			obj.rotation = obj.rotation % 360;
-			
+
 			obj.options();
+			
 			obj.valid 		= false;
 			myState.valid 	= false;
 		}
@@ -1130,10 +1138,10 @@ function CanvasState(canvas, w, h){
 					break;
 			}
 
+			mySel.options();
+
 			mySel.valid 	= false;
 			myState.valid 	= false;
-			
-			mySel.options(); // refresh options
 		}
 		else{
 			/**
@@ -1434,6 +1442,45 @@ CanvasState.prototype.draw = function(){
 }
 
 /**
+ * This will export the pages with their respective layers drawn on it.
+ * 
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * shapes[i].draw(ctx); ::: if need to draw objects in one canvas.
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+CanvasState.prototype.exportDraw = function(pageNumber){
+
+	/**
+	 * this method will be called frequently,
+	 * the function will execute ONLY IF THE canvasState is invalidated.
+	 */
+
+	var ctx 		= this.ctx;
+	var shapes 		= this.shapes;
+
+	/**
+	 * This will clear the previous selections on the canvas.
+	 * ctx refers to the canvas only for drawing SelectionBorders and SelectionHandles.
+	 */
+	this.clear(ctx);
+
+	for (var i=0; i<shapes.length; i++){
+
+		var shape = shapes[i]; 		// current shape
+
+		// Skip drawing of shapes that is beyond canvas scope.
+		if (shape.x > this.width || shape.y > this.height || shape.x + shape.width < 0 || shape.y + shape.height < 0) continue;
+
+		/**
+		 * Only draw the object if visibility is set to visible and delete is false.1
+		 */
+		if (shape.page == pageNumber && shape.delete == false && shape.visibility == 'visible'){
+			shape.draw(ctx);
+		}
+	}
+}
+
+/**
  * this will calculate the canvas co-ordinates
  * the mouse x,y is sampled to get canvas objects x,y after scaling.
  */
@@ -1518,34 +1565,88 @@ CanvasState.prototype.getCursor = function(mx, my){
 }
 
 
+
+/**
+ * ===========================================================================
+ * File Settings
+ * ===========================================================================
+ */
+var formSettings = {
+	initCheck: function(){
+		// Make sure all the ajax-dependent are hidden
+		$('.ajax_load').parent().parent().addClass('hidden');
+
+		var total 	= $('.control-form').length;
+		var ajax 	= $('.control-form.ajax_load').length;
+		//console.log(total, ajax);
+		$('.control-form.ajax_load').each(function(){
+			var o 		= $(this);
+			var ref_id 	= $(this).attr('data-dep-id');
+			var ref_val = $(this).attr('data-dep-val').toLowerCase();
+			var ref 	= $('#form-control-' + ref_id);
+
+			if (!ref.parent().parent().hasClass('hidden') && ref.val().toLowerCase() == ref_val){
+				o.parent().parent().removeClass('hidden');
+				//console.log(o.attr('data-id'), ref.val(), ref_val);
+			}
+		});
+	},
+	changeCheck: function(){
+		//console.log('checking');
+		formSettings.initCheck();
+	},
+	validate: function(){
+		$('.control-form.ajax_load').each(function(){
+			var o = $(this);
+			if (!o.parent().parent().hasClass('hidden')){
+				var name = o.attr('data-name');
+				o.attr('name', name);
+			}
+			else{
+				o.parent().parent().remove();
+			}
+		});
+	},
+	init: function(){
+		formSettings.initCheck();
+		$('.control-form').change(formSettings.changeCheck);
+		$('#frmSettings').submit(formSettings.validate);
+	}
+};
+
+
+
 /**
  * ===========================================================================
  * F I L E    U P L O A D 
  * ===========================================================================
- * /
+ */
 var fileUpload = {
 	myUploadData: 	[], 			// array for uploaded file names.
-	settings: {
-	    url: 			$('.image-upload-main').data('ref') + 'u/upload',
-	    method: 		"POST",
-	    allowedTypes: 	"jpg,jpeg,png,gif",
-	    fileName: 		"myfile",
-	    multiple: 		false,
-	    maxFileCount: 	50,
-	    beforeSend:function(){
-	    	return false;
-	    },
-	    onSuccess:function(files,data,xhr){
-	        //$("#status").html("<font color='green'>Upload completed</font>");
-	        fileUpload.myUploadData.push(data);
-	    },
-	    afterUploadAll:function(){
-	        fileUpload.after_upload();
-	        $('.upload-statusbar').remove();
-	    },
-	    onError: function(files,status,errMsg){  
-	        $("#status").html("<font color='red'>Upload has Failed</font>");
-	    }
+	folderName: '',					// Folder Name
+	settings: function(){
+		return {
+		    url: 			base_url() + 'm/upload/' + fileUpload.folderName,
+		    method: 		"POST",
+		    allowedTypes: 	"jpg,jpeg,png,gif",
+		    fileName: 		"myfile",
+		    multiple: 		false,
+		    maxFileCount: 	50,
+		    beforeSend:function(){
+		    	return false;
+		    },
+		    onSuccess:function(files,data,xhr){
+		        //$("#status").html("<font color='green'>Upload completed</font>");
+		        fileUpload.myUploadData.push(data);
+		    },
+		    afterUploadAll:function(){
+		        fileUpload.after_upload();
+		        $('.upload-statusbar').remove();
+		    },
+		    onError: function(files,status,errMsg){  
+		        $("#status").html("<font color='red'>Upload has Failed</font>");
+		    }			
+		}
 	},
 	after_upload: function(){
 		if (fileUpload.myUploadData != null){
@@ -1565,16 +1666,20 @@ var fileUpload = {
 						w = tmpImg.width;
 						h = tmpImg.height;
 
-						photo += '<li><div class="img-wrapper"><img src="' + base_url + v + '" width="' + w + '" height="' + h + '" /></div></li>';
+						photo += '<li><div class="img-wrapper"><img src="' + base_url + v + '" data-width="' + w + '" data-height="' + h + '" /></div></li>';
 
 						$('#my-images-list').append(photo);
 					});
 					//var ob = $('input[name="frm_photos"]');
 					//vl = ob.val(ob.val() + ',' + k);
 				});
-			}			
+			}
+			$('#no_img_uploaded').remove();
 			fileUpload.myUploadData = new Array();
 			$('#my-images-list li:last-child').trigger('click');
 		}
+	},
+	init: function(){
+		this.folderName = step.seld.id;
 	}
-};*/
+};

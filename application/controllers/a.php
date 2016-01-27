@@ -1,15 +1,118 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * this controller is for giving access to the admin panel.
+ */
 class A extends CI_Controller {
+
+    private $admin;     // this holds the admin user information.
 	
+    /**
+     * this will extend parent controller's functions and get the stored ADMIN ID.
+     * redirect to login if ADMIN ID is not available.
+     */
 	public function __construct(){
 		parent::__construct();
+
+        $id             = check_admin_login();
+        $this->client   = $this->client_model->findById($id);
     }
 
+    /**
+     * this will show the dashboard.
+     */
     public function index(){
-        redirect('a/opt');
+        
+        $data['title']  = 'Welcome to Admin Panel';
+        $this->load->view('admin/index', $data);
     }
 
+    /**
+     * this will list all the users
+     */
+    public function users($msg='page', $page=1){
+
+        $this->load->library('pagination');
+
+        // Search Keyword..
+        $keyword = @get_cookie(APPID.'_users_keyword');
+        if ($this->input->post('frm_search')){
+            $keyword = $this->input->post('keyword');
+            set_cookie(array('name'=>APPID.'_users_keyword', 'value'=>$keyword, 'expire'=>SESSION));
+        }
+
+        // Pagination for users.
+        $per_page                   = PER_PAGE;
+        $config['base_url']         = site_url("a/users/page/");
+        $config['total_rows']       = $this->client_model->getClientsCount($keyword);
+        $config['per_page']         = $per_page;
+        $config['uri_segment']      = 4;
+
+        $this->pagination->initialize($config);
+        $currentPage                = intval($page) == 0 ? 1 : intval($page);
+        $startIndex                 = ($currentPage - 1) * $per_page;
+
+        $data['keyword']            = $keyword;
+        $data['users']              = $this->client_model->getClients($keyword, $per_page, $startIndex);
+        $data['pagination']         = $this->pagination->create_links();
+        $data['title'] = 'All the SELD Users';
+        
+        $this->load->view('admin/users', $data);
+    }
+
+    /**
+     * this will list all the designs of the client.
+     */
+    public function designs($cl_uid=''){
+
+        if ($cl_uid == '') die('<h1>Invalid Client</h1>');
+
+        // load model
+        $this->load->model('product_model');
+
+        // Products
+        $client = $this->client_model->findById($cl_uid);
+
+        $data['title']              = 'SELD Client Designs';
+        $data['client']             = $client;
+        $data['designs']            = $this->product_model->getProducts($client->cl_id, '', 1000);
+
+        $this->load->view('admin/designs', $data);
+    }
+
+    /**
+     * this will list all the order-report of the clients.
+     */
+    public function orders($cl_uid=''){
+
+        if ($cl_uid == '') die('<h1>Invalid Client</h1>');
+
+        // load model
+        $this->load->model('order_model');
+
+        // Products
+        $client = $this->client_model->findById($cl_uid);
+
+        $data['title']              = 'SELD Client Designs';
+        $data['client']             = $client;
+        $data['orders']             = $this->order_model->getOrders($client->cl_id, 1000);
+
+        $this->load->view('admin/orders', $data);
+    }
+
+    /**
+     * this method will log out user
+     * and redirect to member login page.
+     */
+    public function logout(){
+
+        delete_cookie(APP_ADMIN.'_admin');
+        redirect('p/login', 'refresh');
+    }
+
+    /**
+     * this will list out all the options available for SELD Products.
+     */
     public function opt($msg='view', $uid=''){
         $this->load->model('design_options_model', 'options');
         $this->load->model('design_products_model', 'design');
@@ -95,6 +198,6 @@ class A extends CI_Controller {
         $data['msg']        = $msg;
 
         //new dBug($data);
-        $this->load->view('mt', $data);
+        $this->load->view('member/mt', $data);
     }    
 }

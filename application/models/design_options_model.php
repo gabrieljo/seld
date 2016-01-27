@@ -25,6 +25,7 @@ class Design_Options_model extends CI_Model{
 	public function findOptions($type=0){
 		$this->db->where('d_op_pr_id', $type);
 		$this->db->where('d_op_status', '1');
+		$this->db->order_by('d_op_sortorder');
 		return $this->db->get($this->tableName);
 	}
 }

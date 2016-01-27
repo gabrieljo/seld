@@ -29,7 +29,7 @@ class User_model extends CI_Model{
 	public function validate($username=null, $password=null){
 		$return = null;
 		if ($username != null && $password != null){
-			$row = $this->findById($username, 'usr_username');
+			$row = $this->findById($username, 'usr_email');
 			if ($row != null){ // Email Exists
 				if ($row->usr_password == $password){
 					$return = $row;

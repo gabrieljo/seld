@@ -61,6 +61,69 @@ class Client_model extends CI_Model{
 		$row = $query->row();
 		return $row == null ? true : false;
 	}
+
+	/**
+	 * find the list of users with total designs
+	 */
+	public function getClients($keyword='', $limit=20, $offset=0){
+
+		/**
+		 * Join Products.
+		 */
+		$this->db->select('tbl_clients.*, COUNT(tbl_products.pr_id) as total');
+		$this->db->join('tbl_products', 'tbl_clients.cl_id = tbl_products.pr_cl_id')
+				 ->group_by('tbl_products.pr_cl_id');
+		
+		if ($keyword != ''){
+			/**
+			 * check if keyword has space. (firstname_lastname)
+			 */
+			$spaces = explode(' ', $keyword);
+
+			$fname = @$spaces[0];
+			$lname = count($spaces > 1) ? @$spaces[1] : $fname;
+
+			if (count($spaces) > 1){ // check firstname and lastname.
+				$this->db->like('cl_firstname', $fname, 'after');
+				$this->db->like('cl_lastname', $lname, 'after');
+			}
+			else{
+				$this->db->like('cl_firstname', $fname, 'after');
+				$this->db->or_like('cl_lastname', $fname, 'after');
+				$this->db->or_like('cl_email', $fname);
+			}
+		}
+		$this->db->order_by("cl_firstname", "asc");
+		return $this->db->get_where($this->tableName, array(), $limit, $offset);
+	}
+
+	/**
+	 * this method will count the total rows
+	 */
+	public function getClientsCount($keyword=''){
+
+		if ($keyword != ''){
+			/**
+			 * check if keyword has space. (firstname_lastname)
+			 */
+			$spaces = explode(' ', $keyword);
+			$fname = @$spaces[0];
+			$lname = count($spaces > 1) ? @$spaces[1] : $fname;
+
+			if (count($spaces) > 1){ // check firstname and lastname.
+				$this->db->like('cl_firstname', $fname, 'after');
+				$this->db->like('cl_lastname', $lname, 'after');
+			}
+			else{
+				$this->db->like('cl_firstname', $fname, 'after');
+				$this->db->or_like('cl_lastname', $fname, 'after');
+				$this->db->or_like('cl_email', $fname);
+			}
+		}
+
+		$query 	= $this->db->from($this->tableName);
+		return $this->db->count_all_results();
+	}
 }
 
 /* End of file client_model.php */

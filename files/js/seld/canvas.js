@@ -17,8 +17,9 @@
  */
 
  var step = {
+ 	seld:{},				// Canvas ref object.
 	seldCanvas:'',			// JS object of SELD Editor CANVAS
-	seldCanvasObjects:[],	// array of canvas objects.
+	seldCanvasObjects:[],	// array of canvas objects (contexts).
 	selectionIndex:0, 		// Selection index of seldCanvas.shapes[INDEX]
 	selectionGhost: $('#selectionObject'), 	// selection ghost to imitate dragging, rotating and resizing.
 	preloadImages:[],		// array of images to be loaded.
@@ -32,19 +33,43 @@
 		 */
 		
 		// get canvas properties
-		var o 			= $('#design-pages');
-		var width 		= parseInt(o.data('width'));
-		var height 		= parseInt(o.data('height'));
-		var pages 		= parseInt(o.data('pages'));
-		var faces 		= parseInt(o.data('faces'));
+		var o 					= $('#design-pages');
+		step.seld.id 			= o.attr('data-ref');
+		step.seld.width 		= parseInt(o.data('width'));
+		step.seld.fullWidth		= parseInt(o.data('width'));
+		step.seld.height 		= parseInt(o.data('height'));
+		step.seld.pages 		= parseInt(o.data('pages'));
+		step.seld.fold 			= parseInt(o.data('fold'));
+		step.seld.type 			= parseInt(o.data('type'));
+		step.seld.orientation 	= o.data('orientation');
+
+		/**
+		 * Calculate total pages.
+		 * for "Leaflet" keep account of folding numbers.
+		 * the total pages will be 
+		 * 	Number of sides * (Total Folding + 1)
+		 */
+		step.seld.totalPage = step.seld.type == 2 ? (step.seld.pages * (step.seld.fold+1)) : step.seld.pages;
+
+		/**
+		 * Divide Canvas width if type is "leaflet"
+		 * and folding is more than 0.
+		 */
+		if (step.seld.type == 2 && step.seld.fold > 0){
+			step.seld.width = Math.ceil(step.seld.width / step.seld.fold);
+		}
 		
-		step.seldCanvas	= new CanvasState(document.getElementById('pad'), width, height);
-		$('#pad,.sub-canvas, #canvas_ghost').css({'width':width, 'height':height}).attr({'width':width, 'height':height});
+		/**
+		 * Create main Canvas to refer drawing.
+		 */
+		step.seldCanvas	= new CanvasState(document.getElementById('pad'), step.seld.width, step.seld.height);
+		$('#pad,.sub-canvas, #canvas_ghost').css({'width':step.seld.width, 'height':step.seld.height}).attr({'width':step.seld.width, 'height':step.seld.height});
+
 		// paint bg color
 		step.seldCanvas.bgColor = '#ffffff';
 
 		// Load saved contents.
-		step._loadProgress({w:width, h:height, p:pages, f:1});
+		step._loadProgress();
 
 		// preprare tools
 		step._initTools();
@@ -55,7 +80,7 @@
 		// Clear extra elements and remove overlay
 		$('.seld-status, .seld-footer').remove();
 	},
-	_loadProgress: function(ref){
+	_loadProgress: function(){
 		/**
 		 * this will pre-load the saved design
 		 * 
@@ -69,9 +94,8 @@
 		 * load the SeldPage instances first.
 		 * load canvasObject 
 		 */
-		var total 		= ref.p * ref.f;
-		for (var i=1; i<=total; i++){
-			var seld = new SeldPage(ref.w, ref.h, i);
+		for (var i=1; i<=step.seld.totalPage; i++){
+			var seld = new SeldPage(step.seld.width, step.seld.height, i);
 			shapes.push(seld);
 		}
 
@@ -144,12 +168,22 @@
 		$('.seld-nav').addClass('hidden');
 		$('#loading_page').removeClass('hidden');
 		var vl = parseInt($('#seldpage-number').val());
+
 		step.currentPage 			= vl;
 		step.seldCanvas.currentPage = vl;
 
 		// clear selection of previous page.
-		step.seldCanvas.selection = null;
-		step.seldCanvas.valid = false;
+		step.seldCanvas.selection 	= null;
+		step.seldCanvas.valid 		= false;
+
+		// load options for current page.
+		step.selectionIndex = 0;
+		for (var i=0; i<step.seld.totalPage; i++){
+			if (step.seldCanvas.shapes[i].name == 'canvas' && step.seldCanvas.shapes[i].page == vl){
+				step.selectionIndex = i;
+				step.selectLayer(i);
+			}
+		}
 
 		// update layers list
 		step.updateLayer();
@@ -166,7 +200,7 @@
 			step.seldCanvas.valid = false;
 			$('#loading_page').addClass('hidden');
 			$('.seld-nav').removeClass('hidden');
-		}, 500);
+		}, 100);
 	},
 	_loadFiles: function(){
 		/**
@@ -217,13 +251,12 @@
 		 */
 		var page 		= dir || 'next';
 		var current 	= parseInt($('#seldpage-number').val());
-		var totalPage 	= $('#design-pages').attr('data-total');
 
 		if (dir == 'next'){
-			page = current >= totalPage ? 1 : current+1;
+			page = current >= step.seld.totalPage ? 1 : current+1;
 		}
 		else{
-			page = current <= 1 ? totalPage : current-1;
+			page = current <= 1 ? step.seld.totalPage : current-1;
 		}
 
 		$('#seldpage-number option[value="' + page + '"]').prop('selected', true);
@@ -264,10 +297,9 @@
 		 * this method will zoom the canvas for best fit to the screen size.
 		 *  	if too small, the canvas will be set to max of 200% scale.
 		 */
-		var o 			= $('#design-pages');
 		var padding 	= 55*2;
-		var width 		= o.data('width');
-		var height 		= o.data('height');
+		var width 		= step.seld.width;
+		var height 		= step.seld.height;
 
 		var sc_width 	= parseInt($('#canvas').width())  - padding;
 		var sc_height 	= parseInt($('#canvas').height()) - padding;
@@ -363,7 +395,7 @@
 				newShape.push(o);
 			}
 		}
-		step.seldCanvas.shapes = newShape;		
+		step.seldCanvas.shapes = newShape;
 		step.seldCanvas.valid = false;
 
 		// Req. draw all objects.
@@ -401,6 +433,24 @@
 				o.valid = false;
 				continue;
 			}
+		}
+	},
+	layerActionApplyBg: function(){
+		/**
+		 * this will apply current page's background to all pages.
+		 */
+		if ($(this).is(':checked')){
+			if (confirm('Apply Background Color to all pages?')){
+				var bg = $('#seldCanvas-bgColor').val();
+				
+				// apply bg color to all pages.
+				for (var i=0; i<step.seldCanvas.shapes.length; i++){
+					if (step.seldCanvas.shapes[i].name == 'canvas'){
+						step.seldCanvas.shapes[i].bgColor = bg;
+					}
+				}
+			}
+			$(this).attr('checked', false);
 		}
 	},
 	performLayerAction: function(obj, type, value){
@@ -484,7 +534,7 @@
 					step.seldCanvas.addShape(obj);
 
 					obj.valid = false;
-					step.seldCanvas.valid = false;					
+					step.seldCanvas.valid = false;
 					// make multiple-paste in the future.
 					step.ghostCopy = null;
 				}
@@ -558,7 +608,7 @@
 				value = $(this).attr('data-value');
 			}
 			else{
-				$('.dToolOptionButton[data-type="' + attr + '"]').toggleClass('active');				
+				$('.dToolOptionButton[data-type="' + attr + '"]').toggleClass('active');
 			}
 
 			// Dependent Group Options
@@ -757,6 +807,7 @@
 				shape.borderColor = value;
 				break;
 		}
+
 		shape.valid = false;
 		step.seldCanvas.valid = false; // req to redraw update.
 	},
@@ -768,8 +819,10 @@
 		step.selectionIndex = shapeIndex;
 		if (shapeIndex >= 0){
 			var shape = step.seldCanvas.shapes[shapeIndex];
-			$('#design-tools-options').removeClass().addClass('current-' + shape.name);
+			// load options
 			shape.options();
+
+			$('#design-tools-options').removeClass().addClass('current-' + shape.name);
 			// layer selection dependent options
 			$('.requireLayerSelection').removeClass('disabled');
 			// check visibility of group options
@@ -875,12 +928,75 @@
 	save: function(){
 		/**
 		 * this will save the objects in JSON format.
+		 * 
+		 * Export Each layer as PNG after saving the content.
 		 */
-		var id 	= $('#design-pages').attr('data-ref');
+		$('.canvas_file_info.overlay, .canvas_status_saving').removeClass('hidden');
 		var data= step.seldCanvas.shapes != null ? JSON.stringify(step.seldCanvas.shapes) : '';
 
-		$.post(base_url()+'m/save/' + id, {'title':encodeURIComponent($('#canvas_title').val()), 'desc':encodeURIComponent($('#canvas_description').val()), 'content':data});
+		$.post(base_url()+'m/save/' + step.seld.id, {'title':encodeURIComponent($('#canvas_title').val()), 'desc':encodeURIComponent($('#canvas_description').val()), 'content':data});
+
+		/**
+		 * Loop through all the objects, and export as image (1 image per page).
+		 */
+		step.exportPage(1);
+
 		return false;
+	},
+	saveValidation: function(){
+		if ($('#canvas_title').val() == ''){
+			alert('File name is required.');
+			$('#canvas_title').focus();
+		}
+		else{
+			step.save();
+			// Hide the overlay.
+			$('.canvas_file_info').addClass('hidden');
+		}
+		return false;
+	},
+	exportPage: function(page){
+		if (page <= step.seld.totalPage){
+
+			step.seldCanvas.exportDraw(page);
+			var canvas 	= document.getElementById('pad');
+			var dataURL = canvas.toDataURL();
+
+			$.ajax({
+				type: 	'post',
+				url: 	base_url()+'m/saveImage/' + step.seld.id + '/' + page,
+				data: 	{  
+							imgBase64: dataURL
+				},
+				success: function(m){
+					step.exportPage(++page);
+				},
+				error: function(){
+					alert('Error Exporting Design!');
+					$('.canvas_file_info.overlay, .canvas_status_saving').addClass('hidden');
+				}
+			});
+		}
+		else{
+			// finish exporting.
+			setTimeout(function(){
+				$('.canvas_file_info.overlay, .canvas_status_saving').addClass('hidden');
+				step._loadPage();
+			}, 1000);
+		}
+	},
+	openInfo: function(){
+		/**
+		 * this will open modal for file info.
+		 */
+		$('#btn_file_info_settings_close, #file_info_save_btn, .canvas_file_info').removeClass('hidden');
+		$('#mycol-type, #mycol-options, #mycol-themes').addClass('hidden');
+	},
+	closeInfo: function(){
+		/**
+		 * this will close the file info dialog.
+		 */
+		$('#btn_file_info_settings_close, #file_info_save_btn, .canvas_file_info').addClass('hidden');
 	},
 	_initTools: function(){
 		/**
@@ -919,7 +1035,7 @@
 		$('.close_parent').click(function(){
 			var target = $(this).attr('data-target');
 			$(target).addClass('hidden');
-			
+
 			if (target == '#layer_overlay'){
 				localStorage.setItem('tool-layers', 'hidden');
 			}
@@ -943,17 +1059,69 @@
 		 * this will enable user to navigate through design pages.
 		 */
 		$('#seldpage-number').change(step._loadPage);
+
+		/**
+		 * this will apply the current background color to all pages.
+		 */
+		$('#apply_background_all').click(step.layerActionApplyBg);
+
 	},
 	_initToolsDesignOptions: function(){
-		/**
-		 * Initialize Design Options
-		 */
-		$('#saveimagebutton').click(step.saveImage);
 
 		/**
 		 * this will save the canvas objects to database
 		 */
 		$('#saveCanvas').click(step.save);
+		
+		/**
+		 * Open File Info
+		 */
+		$('#openInfo').click(step.openInfo);
+
+		/**
+		 * save validation
+		 */
+		$('#btnupdate_file_info').click(step.saveValidation);
+
+		/**
+		 * close file info
+		 */
+		$('#btn_file_info_settings_close').click(step.closeInfo);
+
+		/**
+		 * canvas navigation
+		 * navigation buttons and pages view.
+		 */
+		$('li.canvas_pagination').click(function(){
+			var ref = $(this).attr('data-type'); 
+			if (ref == 'view'){
+				// show view modal
+				$('#canvas_pages').html('');
+				var totalRows	= Math.ceil(step.seld.totalPage/5);
+				var height 		= parseInt($('.canvas_pages_view.wrapper').height()) / totalRows - 15;
+				for (var i=1; i<=step.seld.totalPage; i++){
+					var css = 'height:' + height + 'px;line-height:' + height + 'px;';
+					if (totalRows > 3){
+						css += 'font-size:12px;';
+					}
+					var cls = i == step.currentPage ? 'active' : '';
+					$('#canvas_pages').append('<li class="'+cls+'" style="' + css + '">' + i + '</li>');
+				}
+				$('.canvas_pages_view').removeClass('hidden');
+			}
+			else{
+				step.navigatePage(ref);
+			}
+		});
+		$('.canvas_pages_view.overlay').click(function(){
+			$('.canvas_pages_view').addClass('hidden');
+		});
+		$('body').on('click', '#canvas_pages li', function(){
+			var newPage = $(this).text();
+			$('#seldpage-number option[value="' + newPage + '"]').prop('selected', true);
+			$('.canvas_pages_view').addClass('hidden');
+			step._loadPage();
+		});
 
 		// editor colorpicker
 		$('.isColorPicker').colorpicker({format:'hex'}).on('changeColor.colorpicker', function(e){step.performDesignOptionColor(e.target.id)});
@@ -999,19 +1167,19 @@
 			var w 	= $(this).find('img').attr('data-width');
 			var h 	= $(this).find('img').attr('data-height');
 
-			$('#select_image_preview img').attr({'src':src, 'data-width':w, 'data-height':h});			
+			$('#select_image_preview img').attr({'src':src, 'data-width':w, 'data-height':h});
 		});
 
 		// image uploader
-		$("#image_uploader").uploadFile(fileUpload.settings);
+		fileUpload.init();
+		$("#image_uploader").uploadFile(fileUpload.settings());
 	},
-
-	/**
-	 * this will load the text presets
-	 *
-	 * color, fontFamily, fontWeight, fontStyle, gradient, gradientColor, Stroke, StrokeWidth, Shadow, shadowColor, shadowX, shadowY, shadowBlur
-	 */
 	_initTextPresets: function(){
+		/**
+		 * this will load the text presets
+		 *
+		 * color, fontFamily, fontWeight, fontStyle, gradient, gradientColor, Stroke, StrokeWidth, Shadow, shadowColor, shadowX, shadowY, shadowBlur
+		 */
 
 		//    		0 			1			2			3		4			5			6		7				8			9			10			11		12		13
 		// 			color, 	fontFamily, fontWeight, fontStyle, gradient, gradientColor, Stroke, Stroke, 	StrokeColor   Shadow, shadowColor, 		scX, 	Y		Blur
@@ -1131,6 +1299,9 @@
 		// Layers View
 		ref.bind('keydown', 'ctrl+l', function(e){$('.dTool[data-type="layers"]').trigger('click');e.preventDefault()});
 
+		// File information
+		ref.bind('keydown', 'ctrl+i', function(e){$('.dTool[data-type="info"]').trigger('click');e.preventDefault()});
+
 		// Hide current layer
 		ref.bind('keydown', 'ctrl+k', function(e){step.toggleLayerVisibility('current');e.preventDefault()});
 
@@ -1142,6 +1313,9 @@
 
 		// fit to screen
 		ref.bind('keydown', 'ctrl+q', function(e){step.zoomCanvasFit();e.preventDefault()});
+
+		// view pages
+		ref.bind('keydown', 'alt+v', function(e){$('.canvas_pagination[data-type="view"]').trigger('click');e.preventDefault()})
 
 		/**
 		 * this will navigate current design page. next and prev.
@@ -1175,6 +1349,11 @@
 		/**
 		 * this will initialize tools required while creating new design.
 		 */
+		
+		// get canvas properties
+		var o 					= $('#design-pages');
+		step.seld.id 			= o.attr('data-ref');
+
 		$('.canvas_file_info').removeClass('hidden');
 
 		// this will load the options
@@ -1229,7 +1408,7 @@
 							$('#file_info_save_btn').removeClass('hidden');
 						}
 						else{
-							$('#mycol-themes .mycol-container').html(data);							
+							$('#mycol-themes .mycol-container').html(data);
 						}
 					},
 					failure: function(){
@@ -1274,7 +1453,7 @@
 				// Hide the overlay.
 				$('.canvas_file_info').addClass('hidden');
 
-				location.reload();				
+				location.reload();
 			}
 			return false;
 		});
@@ -1291,113 +1470,3 @@
 		}
 	}
 }
-
-
-/**
- * ===========================================================================
- * F I L E    U P L O A D 
- * ===========================================================================
- */
-var fileUpload = {
-	myUploadData: 	[], 			// array for uploaded file names.
-	settings: {
-	    url: 			$('.image-upload-main').data('ref') + 'm/upload/' + $('#design-pages').attr('data-ref'),
-	    method: 		"POST",
-	    allowedTypes: 	"jpg,jpeg,png,gif",
-	    fileName: 		"myfile",
-	    multiple: 		false,
-	    maxFileCount: 	50,
-	    beforeSend:function(){
-	    	return false;
-	    },
-	    onSuccess:function(files,data,xhr){
-	        //$("#status").html("<font color='green'>Upload completed</font>");
-	        fileUpload.myUploadData.push(data);
-	    },
-	    afterUploadAll:function(){
-	        fileUpload.after_upload();
-	        $('.upload-statusbar').remove();
-	    },
-	    onError: function(files,status,errMsg){  
-	        $("#status").html("<font color='red'>Upload has Failed</font>");
-	    }
-	},
-	after_upload: function(){
-		if (fileUpload.myUploadData != null){
-			var photo 	= '';
-			var base_url= $('.image-upload-main').data('ref');
-			for (i=0; i<fileUpload.myUploadData.length; i++){
-				var arr 	= $.parseJSON(fileUpload.myUploadData[i]);
-				$.each(arr, function(k, v){
-					// get the filesize information
-					var w = 0;
-					var h = 0;
-					var tmpImg = new Image();
-					var source = base_url + v;
-					tmpImg.src = source.replace('thumbs/', '');
-
-					$(tmpImg).on('load', function(){
-						w = tmpImg.width;
-						h = tmpImg.height;
-
-						photo += '<li><div class="img-wrapper"><img src="' + base_url + v + '" width="' + w + '" height="' + h + '" /></div></li>';
-
-						$('#my-images-list').append(photo);
-					});
-					//var ob = $('input[name="frm_photos"]');
-					//vl = ob.val(ob.val() + ',' + k);
-				});
-			}			
-			fileUpload.myUploadData = new Array();
-			$('#my-images-list li:last-child').trigger('click');
-		}
-	}
-};
-
-/**
- * ===========================================================================
- * File Settings
- * ===========================================================================
- */
-var formSettings = {
-	initCheck: function(){
-		// Make sure all the ajax-dependent are hidden
-		$('.ajax_load').parent().parent().addClass('hidden');
-
-		var total 	= $('.control-form').length;
-		var ajax 	= $('.control-form.ajax_load').length;
-		//console.log(total, ajax);
-		$('.control-form.ajax_load').each(function(){
-			var o 		= $(this);
-			var ref_id 	= $(this).attr('data-dep-id');
-			var ref_val = $(this).attr('data-dep-val').toLowerCase();
-			var ref 	= $('#form-control-' + ref_id);
-
-			if (!ref.parent().parent().hasClass('hidden') && ref.val().toLowerCase() == ref_val){
-				o.parent().parent().removeClass('hidden');
-				//console.log(o.attr('data-id'), ref.val(), ref_val);
-			}
-		});
-	},
-	changeCheck: function(){
-		//console.log('checking');
-		formSettings.initCheck();
-	},
-	validate: function(){
-		$('.control-form.ajax_load').each(function(){
-			var o = $(this);			
-			if (!o.parent().parent().hasClass('hidden')){
-				var name = o.attr('data-name');
-				o.attr('name', name);
-			}
-			else{
-				o.parent().parent().remove();
-			}
-		});
-	},
-	init: function(){
-		formSettings.initCheck();
-		$('.control-form').change(formSettings.changeCheck);
-		$('#frmSettings').submit(formSettings.validate);
-	}
-};
