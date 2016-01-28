@@ -9,7 +9,7 @@ $navs = array(
 			'p/login'			=> 'Login'*/
 			'p/login' 	=> 'SELD 하기',
 			'p/about' 	=> '둘러보기',
-			'p/market'	=> 'SELD 마켓',
+			'market/index'	=> 'SELD 마켓',
 			'p/order' 	=> 'SELD 의뢰하기',
 		);
 ?>
