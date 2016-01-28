@@ -260,7 +260,7 @@ h1{
 
 	.product-thumb .caption {
 	    padding: 0 20px;
-	    min-height: 180px;
+	    min-height: 120px;
 	}
 
 	.product-thumb .item-status {
@@ -268,8 +268,50 @@ h1{
 	    background-color: #eee;
 	    overflow: auto;
 	}
+
+	.product-thumb{
+		.image{text-align:center;}
+		.image img{margin: 10px 0;}
+	}
 }
 
 .market-wrapper{
 	margin-top: 50px;
+	.sub-title{font-weight:bold;font-size:20px;}
+	#sub-categories{list-style:none;
+		li{float:left;    width: 25%;}
+		li a{	position: relative;
+			    display: block;
+			    padding: 5px 0 2px 27px;
+			    background: url('../img/bl_rect01.gif') no-repeat 20px 10px;
+			    color: #222;
+			    font-size: 12px;
+			    border-left: 1px solid #E1E1E1;
+			    line-height: 14px;
+			    text-decoration:none;
+		    }
+	}
+
+	.button-group {
+	    border-top: 1px solid #ddd;
+	    background-color: #eee;
+	    overflow: auto;
+	     button {
+		    width: 60%;
+		    border: none;
+		    display: inline-block;
+		    float: left;
+		    background-color: #eee;
+		    color: #888;
+		    line-height: 38px;
+		    font-weight: bold;
+		    text-align: center;
+		    text-transform: uppercase;
+		}
+
+		button + button {
+		    width: 40%;
+		    border-left: 1px solid #ddd;
+		}
+	}
 }

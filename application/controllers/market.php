@@ -12,14 +12,20 @@ class Market extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 
+        $this->load->model('market_model', 'market');
+        $this->load->model('category_model', 'category');
     }
 
     /**
      * this will show the dashboard.
      */
     public function index(){
+        $data['categories']     = $this->category->getCategories();
+        $data['sub_categories'] = $this->category->getCategories('1', '0');
+        $data['items']          = $this->market->getList();
         
-        $this->load->view('market/index');
+        
+        $this->load->view('market/index', $data);
     }
 
     
