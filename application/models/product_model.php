@@ -28,8 +28,11 @@ class Product_model extends CI_Model{
 		}
 		// get product type
 		$this->db->join('tbl_design_products', 'tbl_design_products.d_pr_id=tbl_products.pr_type', 'left');
-		$this->db->order_by('pr_created_at', 'desc');
+		$this->db->order_by('pr_title', 'asc');
+		
 		$this->db->where('pr_cl_id', $client_id);
+		$this->db->where('pr_status != ', 'deleted');
+
 		return $this->db->get($this->tableName, $limit, $offset);
 	}
 
@@ -37,11 +40,15 @@ class Product_model extends CI_Model{
 	 * this method will count total themes for the product
 	 */
 	public function countProducts($client_id=0, $keyword=''){
+
 		if ($keyword != ''){
 			$this->db->like('pr_title', $keyword);
 			$this->db->or_like('pr_description', $keyword);
 		}
+
 		$this->db->where('pr_cl_id', $client_id);
+		$this->db->where('pr_status != ', 'deleted');
+		
 		$this->db->from($this->tableName);
 		return $this->db->count_all_results();		
 	}

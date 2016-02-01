@@ -8,7 +8,14 @@
 var design = {
 	deleteConfirmation: function(){
 
-		if (confirm('Are you sure you want to delete this design?\r\nThis can\'t be undone.')){
+		if (confirm('Are you sure you want to DELETE this design?\r\nThis can\'t be undone.')){
+			return true;
+		}
+		return false;
+	},
+	copyConfirmation: function(){
+
+		if (confirm('Are you sure you want to COPY this design?')){
 			return true;
 		}
 		return false;
@@ -39,6 +46,7 @@ var design = {
 	init: function(){
 
 		$('a.btnDelete').click(design.deleteConfirmation);
+		$('a.btnCopy').click(design.copyConfirmation);
 
 		/**
 		 * this will load preview, if doesn't exist, make one.

@@ -41,6 +41,7 @@ $keyword = isset($keyword) ? $keyword : '';
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav navbar-right">
 			<li><?=anchor('a', '<span class="glyphicon glyphicon-th-large"></span> Dashboard')?></li>
+			<li><?=anchor('a/articles', '<span class="glyphicon glyphicon-user"></span> Articles')?></li>
 			<li><?=anchor('a/users', '<span class="glyphicon glyphicon-user"></span> Users')?></li>
 			<li><?=anchor('a/report', '<span class="glyphicon glyphicon-cd"></span> Report')?></li>
 			<li><?=anchor('a', '<span class="glyphicon glyphicon-info-sign"></span> About', array('class'=>'link_about'))?></li>

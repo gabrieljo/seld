@@ -1,12 +1,20 @@
 var register = {
 	validateForm: function(){
-		var o = $('#company');
+		var o = $('#firstname');
 		if ($.trim(o.val()) == ''){
 			o.parent().parent().addClass('has-error');
 		}
 		else{
 			o.parent().parent().removeClass('has-error');
 		}
+		var o = $('#lastname');
+		if ($.trim(o.val()) == ''){
+			o.parent().parent().addClass('has-error');
+		}
+		else{
+			o.parent().parent().removeClass('has-error');
+		}
+		
 		o = $('#email');
 		if ($.trim(o.val()) == '' || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(o.val()))){
 			o.parent().parent().addClass('has-error');
@@ -29,13 +37,8 @@ var register = {
 		if ($('#frm-register .form-group.has-error').length > 0){
 			$('#frm-register .form-group.has-error:eq(0)').find('.form-control').select();
 		}
-		else{
-			if ($('#tnc:checked').length != 1){
-				alert('You must agree to our terms and conditions to continue...');
-			}
-			else{
-				return true;				
-			}
+		else{			
+			return true;				
 		}
 		return false;
 	},
@@ -55,7 +58,7 @@ var register = {
 		}
 	},
 	showTnC: function(){
-		$('#myModal').modal('show');
+		//$('#myModal').modal('show');
 	},
 	init: function(){
 		$('#frm-register').submit(register.validateForm);

@@ -42,14 +42,18 @@
 	<label>Name:</label> <?=form_input('name', $f['d_op_name'])?> <br>
 	<?php
 	$options = '';
+	$prices = '';
 	if ($f['d_op_options'] != ''){
 		$opts = unserialize($f['d_op_options']);
+		$prcs = unserialize(@$f['d_op_options_price']);
 		foreach ($opts as $k=>$v){
 			$options.= $k . "\n";
+			$prices.= doubleval(@$prcs[$k]) . "\n";
 		}
 	}
 	?>
-	<label>Options:</label> <?=form_textarea(array('name'=>'options', 'value'=>$options, 'rows'=>'22'))?> <br>
+	<label>Options / Prices:</label> <?=form_textarea(array('name'=>'options', 'value'=>$options, 'rows'=>'22', 'cols'=>'50'))?>
+	<?=form_textarea(array('name'=>'prices', 'value'=>$prices, 'rows'=>'22', 'cols'=>'20'))?> <br>
 	<label>default:</label> <?=form_input('default', $f['d_op_default'])?> <br>
 	<?php
 	/*

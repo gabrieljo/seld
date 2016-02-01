@@ -2,16 +2,36 @@
 $title = isset($title) ? $title : SITE_TITLE;
 
 // Nav Links
-$navs = array(
+/*$navs = array(
 			/*base_url() 			=> 'Home',
 			'p/about/SelD' 		=> 'About Us',
 			'p/contact'			=> 'Contact',
-			'p/login'			=> 'Login'*/
+			'p/login'			=> 'Login'* /
 			'p/login' 	=> 'SELD 하기',
 			'p/about' 	=> '둘러보기',
 			'p/market'	=> 'SELD 마켓',
 			'p/order' 	=> 'SELD 의뢰하기',
-		);
+		);*/
+
+$navs = array();
+$navs['p/login'] 	= 'SELD 하기';
+$navs['p/about'] 	= '둘러보기';
+$navs['p/market'] 	= 'SELD 마켓';
+$navs['p/order'] 	= 'SELD 의뢰하기';
+
+$quick_links = array();
+$id = !get_cookie(APP_MEMBER.'_member') ? null : get_cookie(APP_MEMBER.'_member');
+
+if ($id === null){
+	$quick_links['p/login'] 	= '로그인';
+	$home_link = '';
+}
+else{
+	$quick_links['m/logout'] 	= 'Logout';
+	$home_link = 'm';
+}
+$quick_links['m/index'] = '회원가입';
+
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -46,7 +66,7 @@ $navs = array(
 		
 		<div class="row">
 			<div class="col-xs-3">
-				<?=anchor('', inc('main/logo.png'))?>
+				<?=anchor($home_link, inc('main/logo.png'))?>
 			</div>
 			<div class="col-xs-6">
 			<div id="deco-top-line"></div>
@@ -71,8 +91,11 @@ $navs = array(
 			</div>
 			<div class="col-xs-3">
 				<ul class="user-menu">
-					<li><a href="p/login">로그인</a> </li>
-					<li><a href="#">회원가입</a></li>
+					<?php
+					foreach ($quick_links as $k=>$v){
+						echo '<li>' . anchor($k, $v) . '</li>';
+					}
+					?>
 				</ul>
 			</div>
 		</div>

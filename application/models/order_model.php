@@ -19,6 +19,17 @@ class Order_model extends CI_Model{
 	}
 
 	/**
+	 * this will find the orders history of the product.
+	 */
+	public function getProductHistory($client_id=0, $product_id=0, $limit=200, $offset=0){
+
+		$this->db->where('or_cl_id', $client_id);
+		$this->db->where('or_pr_id', $product_id);
+		$this->db->order_by('or_created_at', 'desc');
+		return $this->db->get($this->tableName, $limit, $offset);
+	}
+
+	/**
 	 * this method will find products of the client
 	 */
 	public function getOrders($client_id=0, $limit=20, $offset=0){

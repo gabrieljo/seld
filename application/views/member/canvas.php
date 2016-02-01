@@ -124,7 +124,7 @@ echo inc($inc);
 	</div><!-- #canvas -->
 
 	<div id="editor_properties">
-		<div class="head">
+		<div class="head hidden">
 			<button id="openInfo" class="btn btn-primary btn-sm dTool" data-type="info" title="File information settings (Ctrl+I)"><span class="glyphicon glyphicon-cog"></span> Settings</button>
 			<button id="saveCanvas" class="btn btn-success btn-sm dTool" data-type="save" title="Save Changes (Ctrl+S)"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
 			<div class="cf"></div>

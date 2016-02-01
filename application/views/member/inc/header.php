@@ -26,7 +26,7 @@ $title = isset($title) ? $title : SITE_TITLE;
 </head>
 <body>
 
-<div class="navbar navbar-default seld-nav">
+<div class="navbar navbar-danger seld-nav">
 <div class="container-fluid">
 	<!-- Brand and toggle get grouped for better mobile display -->
 	<div class="navbar-header">
@@ -36,36 +36,21 @@ $title = isset($title) ? $title : SITE_TITLE;
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<?=anchor('m', inc('logox.png'), array('class'=>'navbar-brand'))?>
+		<?=anchor('m', inc('main/logo.png'), array('class'=>'navbar-brand'))?>
 	</div>
 
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		<ul class="nav navbar-nav">
-			<li>
-				<?=anchor('m/designs', 'My Designs')?>
-			</li>
-		</ul>
-		<?php
-		$settings = isset($email) ? $email : 'sudarshan.sky38@gmail.com';
-		?>
-		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$settings?> <span class="caret"></span></a>
-				<ul class="dropdown-menu">
-					<li><?=anchor('u/profile', '<span class="glyphicon glyphicon-user"></span> Profile')?></li>
-					<li><?=anchor('u/settings', '<span class="glyphicon glyphicon-cog"></span> Settings')?></li>
-					<li role="separator" class="divider"></li>
-					<li><?=anchor('u/logout', '<span class="glyphicon glyphicon-off"></span> Logout')?></li>
-				</ul>
-			</li>
-		</ul>
+		<button class="btn btn-primary btn-sm" style="margin:8px 0 0 20px;" id="btnSeldSettings"><span class="glyphicon glyphicon-cog"></span> Settings</button>
+		<button class="btn btn-success btn-sm" style="margin:8px 0 0;" id="btnSeldSave"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+
+		<?=anchor('m/designs', '<span class="glyphicon glyphicon-triangle-left"></span> My Designs', array('class'=>'btn btn-danger btn-xs pull-right', 'style'=>'padding: 5px 10px;margin:8px -24px 0;'))?>
 	</div><!-- /.navbar-collapse -->
 </div><!-- /.container-fluid -->
 </div>
 <div class="seld-status">
 	<div class="aside">
-		<div id="status_title"><?=isset($status_title) ? $status_title : 'SELD Creative Editor';?></div>
+		<div id="status_title"><?=isset($status_title) ? $status_title : '';?></div>
 	</div>
 	<div class="article">
 		<div id="status_content"><?=isset($status_msg) ? $status_msg : '';?></div>

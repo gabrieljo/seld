@@ -1071,12 +1071,12 @@
 		/**
 		 * this will save the canvas objects to database
 		 */
-		$('#saveCanvas').click(step.save);
+		$('#saveCanvas, #btnSeldSave').click(step.save);
 		
 		/**
 		 * Open File Info
 		 */
-		$('#openInfo').click(step.openInfo);
+		$('#openInfo, #btnSeldSettings').click(step.openInfo);
 
 		/**
 		 * save validation
@@ -1393,6 +1393,10 @@
 			if (ref > 0){
 
 				// Save Options
+				/**
+				 * Remove un-selected options before serializing.
+				 */
+				$('form#frm_canvas_options .form-group.hidden').remove();
 				var dt 		= $('form#frm_canvas_options').serialize();
 				var id 		= $('#design-pages').attr('data-ref');
 				$.post(base_url()+'m/save/' + id + '/options', dt);
@@ -1453,7 +1457,7 @@
 				// Hide the overlay.
 				$('.canvas_file_info').addClass('hidden');
 
-				location.reload();
+				location.reload(true);
 			}
 			return false;
 		});

@@ -38,9 +38,9 @@ class P extends CI_Controller {
         $form                   = array();
         $msg                    = '<p class="bg-info text-center">Use your Username/Password to Login.</p>';
 
-        $form['cl_email']       = (get_cookie(APP_MEMBER.'_userid')) ? get_cookie(APP_MEMBER.'_userid') : '';
+        $form['cl_email']       = get_cookie(APP_MEMBER.'_userid') ? get_cookie(APP_MEMBER.'_userid') : '';
         $form['cl_password']    = '';
-        $form['cl_remember']    = (get_cookie(APP_MEMBER.'_userid')) ? TRUE : FALSE;
+        $form['cl_remember']    = get_cookie(APP_MEMBER.'_userid') ? TRUE : FALSE;
 
         if ($this->input->post('email')){
 
@@ -80,7 +80,7 @@ class P extends CI_Controller {
                         );
                     $this->user_model->save($log, $user->usr_uid);
                     
-                    // redirect to member's (client) dashboard
+                    // redirect to admin's (client) dashboard
                     redirect('a', 'refresh');
                 }
             }
@@ -93,6 +93,9 @@ class P extends CI_Controller {
                         'cl_last_ip'    => $_SERVER['REMOTE_ADDR']
                     );
                 $this->client_model->save($log, $user->cl_uid);
+
+                // LOG
+                $this->log_model->addLog($user->cl_id, 'User logged in.');
                 
                 // redirect to member's (client) dashboard
                 redirect('m', 'refresh');
@@ -118,10 +121,11 @@ class P extends CI_Controller {
      * this method will display the message to user.
      */
     public function response($param=array()){
-        $data['title']      = 'Response :: TruthCRM';
-        $data['heading']    = '404 Page Not Found';
+
+        $data['title']      = 'Page not found | Error 404';
+        $data['heading']    = '<span class="glyphicon glyphicon-remove"></span> 404 Page Not Found';
         $data['message']    = 'The page you requested was not found. It may have been removed or been moved to another location.';
-        $data['class']      = 'info';
+        $data['class']      = 'danger';
 
         foreach ($param as $k=>$v){
             $data[$k] = $v;
@@ -132,27 +136,88 @@ class P extends CI_Controller {
 
     /**
      * this method will register new Member
+     * the email address must be unique and hence validated.
      */
     public function register(){
-        $form = array();
-        $form['cl_company']    = '';
-        $form['cl_email']      = '';
-        $form['cl_password']   = '';
+
+        /**
+         * form default values.
+         */
+        $form = array(
+                    'cl_firstname'      => '',
+                    'cl_lastname'       => '',
+                    'cl_company'        => '',
+                    'cl_telephone'      => '',
+                    'cl_mobile'         => '',
+                    'cl_address1'       => '',
+                    'cl_address2'       => '',
+                    'cl_address3'       => '',
+                    'cl_postcode'       => '',
+                    'cl_email'          => '',
+                    'cl_password'       => '',
+                );
+
+        $msg = '';
 
         if ($this->input->post('submit')){
-            $form['cl_company']    = $this->input->post('company');
-            $form['cl_email']      = $this->input->post('email');
 
+            foreach ($form as $k=>$v){
+                $form[$k] = $this->input->post(str_replace('cl_', '', $k));
+            }
+
+            // successful
             // SHA1 encrypt password
             $this->load->library('encrypt');
-            $form['cl_password']   = $this->encrypt->sha1($this->input->post('password'));
+
+            $form['cl_password'] = $this->encrypt->sha1($this->input->post('password'));
             
-            $this->client_model->save($form);
-            redirect('p/verify_email', 'refresh');
+            if ($this->client_model->save($form)){
+
+                /**
+                 * Send confirmation Email.
+                 */
+                $id         = $this->db->insert_id();
+                $client     = $this->client_model->findById($id, 'cl_id');
+
+                /**
+                 * Email Library
+                 */
+                /*$this->load->library('email');
+
+                $config['protocol']     = 'sendmail';
+                $config['mailpath']     = '/usr/sbin/sendmail';
+                $config['charset']      = 'iso-8859-1';
+                $config['wordwrap']     = TRUE;
+                $config['mailtype']     = 'html';
+
+                $this->email->initialize($config);
+
+                $this->email->from('info@seld.or.kr', 'Seld Creative');
+                $this->email->to($client->cl_email); 
+
+                $this->email->subject('Registration :: Verify Email Address');
+                $this->email->message('
+                                    <br>Seld Creative Editor<br>
+                                    <h1>Thanks for registering to SELD.</h1><hr />
+                                    You are now a member of our <strong>SELD community</strong>. 
+                                    <br>
+                                    Please verify your email address by <a href="http://localhost/ce/git/seld/p/verify/' . $client->cl_uid . '/' . md5($client->cl_created_at) . '" target="_blank">clicking here</a>.
+                                    <br><br>
+                                    <i>Please ignore this email, if you did not register to us.</i>
+                                    <hr />
+                                '); 
+
+                $this->email->send();*/
+
+                $client != null && redirect('p/verify_email/' . $client->cl_uid, 'refresh');
+                $msg = 'Unable to send confirmation.';
+            }
         }
 
         $data['form']   = $form;
+        $data['msg']    = $msg;
         $data['title']  = 'Member Registration :: ' . APP_NAME;
+
         $this->load->view('register', $data);
     }
 
@@ -160,24 +225,72 @@ class P extends CI_Controller {
      * this method will check if the email is available
      */
     public function check_availability(){
+
         $email  = ($this->input->post('email')) ? $this->input->post('email')  : '';
         $id     = ($this->input->post('id')) ? $this->input->post('id')  : '';
 
-        if ($this->client_model->check_availability($email, $id) === TRUE)
-            echo 'available';
-        else
-            echo 'unavailable';
-
-        //$this->output->enable_profiler(true);
+        echo $this->client_model->check_availability($email, $id) === TRUE ? 'available' : 'unavailable';
     }
 
-    public function verify_email(){
-        $data['title']      = 'Registration successful | Verify Email';
-        $data['heading']    = 'Congratulations!';
-        $data['message']    = 'Your registration has been successful.<br /><br />Please verify your email address to continue.';
-        $data['class']      = 'success';
+    /**
+     * this will verify user's email address
+     * and change the status.
+     */
+    public function verify($client_uid='', $token=''){
+
+        $client = $this->client_model->findById($client_uid);
+
+        $client == null && die('Invalid Access');
+
+        $client->cl_status != 'pending' && redirect('p/email_verified/', 'refresh');
+
+        if ($token == md5($client->cl_created_at)){
+
+            $this->client_model->save(array('cl_status' => 'active'), $client->cl_uid);
+            redirect('p/email_verified/' . $client->cl_uid, 'refresh');            
+        }
+
+        die('<h1>Invalid Access</h1>' . anchor('p', 'View Homepage'));
+    }
+
+    /**
+     * this will respond to user's signup by showing email verification message.
+     */
+    public function verify_email($client_uid=''){
+
+        $client = $this->client_model->findById($client_uid);
+        $data   = array();
+
+        if ($client != null){
         
+            $data['title']      = 'Registration successful | Verify Email';
+            $data['heading']    = 'Congratulations!';
+            $data['message']    = 'Your registration has been successful.<br />Please check your email and verify your email address by simply <strong>cliking a link sent in your email address.</strong>';
+            $data['class']      = 'success';
+            
+        }
+
         $this->response($data);
+    }
+
+    /**
+     * this will respond to user's signup by showing email verification message.
+     */
+    public function email_verified($client_uid=''){
+
+        $client = $this->client_model->findById($client_uid);
+        $data   = array();
+
+        if ($client != null){
+            
+            $data['title']      = 'Email Verification Completed';
+            $data['heading']    = '<span class="glyphicon glyphicon-ok"></span> Congratulations!';
+            $data['message']    = 'You have successfully verified your email address.<br />Please login with your email and password to view your SELD profile. <br /><br />' . anchor('p/login', 'Click here to login') . '<hr /><div class="text-center"><i>You have to verify your email address only once.</i></div>';
+            $data['class']      = 'success';
+            
+        }
+
+        $this->response($data);            
     }
 }
 

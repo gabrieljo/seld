@@ -384,7 +384,7 @@ body{background: #fff;/*padding: 60px 0 0;*/ overflow: hidden;}
 						button{margin-left:5px;}
 					}
 					#top_section, #bottom_section{
-						width:220px; position: fixed;right:0; bottom:30px; top:100px; overflow-y:auto;
+						width:220px; position: fixed;right:0; bottom:30px; top:50px; overflow-y:auto;
 						margin-top:35px; padding-bottom: 50px;
 						h3{
 							margin: 0; padding: 10px; border: 1px solid #ccc; border-left: none; border-right: none;
@@ -477,7 +477,7 @@ body{background: #fff;/*padding: 60px 0 0;*/ overflow: hidden;}
 							 * about this function.
 							 */
 							#seldtext-presets{
-								position: fixed; right:0; top:135px; bottom: 30px; width: 220px; background: #fff; z-index:10;
+								position: fixed; right:0; top:85px; bottom: 30px; width: 220px; background: #fff; z-index:10;
 								h4{
 									font: bold 14px Arial; border-bottom: 1px solid #ccc;
 									padding: 0 10px 10px; background: #fafafa;
@@ -600,8 +600,8 @@ body{background: #fff;/*padding: 60px 0 0;*/ overflow: hidden;}
 		}
 	}
 
-	tr td .btnDelete{display: none;}
-	tr:hover td .btnDelete{display: block;}
+	tr td .btnDelete, tr td .btnCopy{display: none;margin-left: 4px;}
+	tr:hover td .btnDelete, tr:hover td .btnCopy{display: block;}
 
 	/**
 	 * this will design the layers floating tab.
@@ -827,6 +827,19 @@ background:#fff url(../img/loading.gif) no-repeat center center;}
 		li:hover{border-color:#ff0;}
 		li.active{border-color:#f00;}
 	}
+}
+
+.panel-heading h3{ margin: 0;}
+
+.product-preview{
+	padding: 0 0 20px;
+	ul.product_info{
+		list-style: none; margin: 0; padding: 0; text-align: center;
+		li{
+			width:150px;height:100px; display: inline-block; text-align: center; margin-right: 2px;
+			img{width:100%; height:auto;margin:10px;max-width: 150px;max-height: 100px;border: 1px solid #777;padding:2px;}
+		}
+	}	
 }
 
 .seld-footer{
