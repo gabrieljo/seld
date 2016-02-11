@@ -457,8 +457,14 @@ class M extends CI_Controller {
         
         $product == null && die('Invalid Access');
 
-        $id = $this->useProductAsTheme($product_uid, 'new');
-        redirect('m/create/' . $id , 'refresh');
+        if ($product->pr_src == 'seld'){
+            $id = $this->useProductAsTheme($product_uid, 'new');            
+            redirect('m/create/' . $id , 'refresh');
+        }
+        else{
+            $id = $this->useDesignAsTheme($product_uid, 'new');
+            redirect('m/import/' . $id , 'refresh');
+        }
     }
 
     /**
@@ -726,6 +732,64 @@ class M extends CI_Controller {
                     @copy($file, './files/products/'.$new_copy->pr_uid.'/thumbs/index.html');
                     @copy($file, './files/products/'.$new_copy->pr_uid.'/design/index.html');
                     @copy($file, './files/products/'.$new_copy->pr_uid.'/design/thumbs/index.html');
+                }
+
+                /**
+                 * Copy all files from prev design to new.
+                 */
+                $this->copy_files('./files/products/'.$product->pr_uid, './files/products/'.$new_copy->pr_uid);
+            }
+        }
+        return $new_uid;
+    }
+
+    /**
+     * this will copy product
+     * DB and files.
+     */
+    private function useDesignAsTheme($product_uid='', $title='copy'){
+
+        $product = $this->product_model->findById($product_uid);
+        $new_uid = '';
+
+        //if ($product != null && $product->pr_cl_id == $this->client->cl_id && ($product->pr_status == 'pending' || $product->pr_status == 'completed')){
+        if ($product != null){
+
+            $title = $title == 'copy' ? $product->pr_title . ' - Copy' : $product->pr_title;
+            
+            $new_copy = array(
+                            'pr_cl_id'      => $this->client->cl_id,
+                            'pr_title'      => $title,
+                            'pr_src'        => 'upload',
+                            'pr_description'=> $product->pr_description,
+                            'pr_type'       => $product->pr_type,
+                            'pr_th_id'      => $product->pr_th_id,
+                            'pr_options'    => $product->pr_options,
+                            'pr_contents'   => $product->pr_contents,
+                            'pr_preview'    => $product->pr_preview,
+                            'pr_status'     => 'designing',
+                            'pr_mk_status'  => 'unlisted',
+                            'pr_mk_description'     => '',
+                            'pr_mk_price'   => 0,
+                            'pr_mk_orig_price'  => 0,
+                            'pr_mk_hits'    => 0
+                        );
+
+            if ($this->product_model->save($new_copy)){
+
+                $id         = $this->db->insert_id();
+                $new_copy   = $this->product_model->findById($id, 'pr_id');
+
+                $new_uid    = $new_copy->pr_uid;
+
+                // Create Product Folders
+                if (!file_exists('./files/products/'.$new_copy->pr_uid)){
+
+                    mkdir('./files/products/'.$new_copy->pr_uid, 0777, true);
+
+                    // also copy index.html to stop direct access.
+                    $file = './files/products/index.html';
+                    @copy($file, './files/products/'.$new_copy->pr_uid.'/index.html');
                 }
 
                 /**

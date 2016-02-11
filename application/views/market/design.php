@@ -23,7 +23,10 @@ foreach($d_options->result() as $opt){
     <div class="row">
         <div class="col-sm-12">
             <div class="design-preview text-center">
-                <?=inc('../products/' . $product->pr_uid . '/design/thumbs/page-1.png')?>                
+                <?php
+                $src = $product->pr_src == 'seld' ? 'design/thumbs/page-1.png' : 'preview.' . $product->pr_preview;
+                echo inc('../products/' . $product->pr_uid . '/' . $src, array('style'=>'max-width:80%;height:auto; max-height:180px;'));
+                ?>
             </div>
             <hr>
             <h2><?=ucfirst($product->pr_title)?></h2>

@@ -70,9 +70,12 @@
             ?>
             <div class="product-layout product-grid col-lg-4 col-md-4 col-sm-6 col-xs-12">
                 <div class="product-thumb">
-                    <div class="image">
+                    <div class="image" style="height: 100px;">
                         <!-- <a href="https://healthmarket.co.nz/clinicians-brain-boost-cognizin"><img src="https://healthmarket.co.nz/image/cache/catalog/products/clinicians/166-228x228.png" alt="<?php echo $item->pr_title?>" title="<?php echo $item->pr_title?>" class=""></a> -->
-                        <?=inc('../products/' . $item->pr_uid . '/design/thumbs/page-1.png')?>
+                        <?php
+                        $src = $item->pr_src == 'seld' ? 'design/thumbs/page-1.png' : 'preview.' . $item->pr_preview;
+                        echo inc('../products/' . $item->pr_uid . '/' . $src, array('style'=>'max-width:80%;height:auto; max-height:95px;'));
+                        ?>
                     </div>
                     <div>
                         <div class="caption">
