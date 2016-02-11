@@ -216,14 +216,15 @@ class M extends CI_Controller {
              * Find NEW design if doesn't already exist.
              */
             $product = $this->product_model->hasNewProduct($this->client->cl_id);
-            if ($product){
+            if ($product && $product->pr_src == 'seld'){
                 redirect('m/create/' . $product->pr_uid); 
                 die('<h1>Design not found!</h1>' . anchor('m/designs', 'Go Back <<'));
             }
             
             $data   = array(
                         'pr_cl_id'      => $this->client->cl_id,
-                        'pr_status'     => 'new'
+                        'pr_status'     => 'new',
+                        'pr_src'        => 'seld'
                     );
             
             if ($this->product_model->save($data)){
@@ -318,6 +319,131 @@ class M extends CI_Controller {
         $data['d_types']    = $this->design_products_model->findAll();
 
         $this->load->view('member/canvas', $data);
+    }
+
+    /**
+     * this will allow user to upload their design.
+     */
+    public function import($id=''){
+
+        $this->load->model('product_model');
+        $this->load->model('design_products_model');
+
+        /**
+         * create new product.
+         * redirect to same method with id.
+         */
+        if ($id == ''){
+
+            /**
+             * Find NEW design if doesn't already exist.
+             */
+            $product = $this->product_model->hasNewProduct($this->client->cl_id);
+            if ($product && $product->pr_src == 'upload'){
+                redirect('m/import/' . $product->pr_uid); 
+                die('<h1>Design not found!</h1>' . anchor('m/designs', 'Go Back <<'));
+            }
+            
+            $data   = array(
+                        'pr_cl_id'      => $this->client->cl_id,
+                        'pr_status'     => 'new',
+                        'pr_src'        => 'upload'
+                    );
+            
+            if ($this->product_model->save($data)){
+
+                $id         = $this->db->insert_id();
+                $product    = $this->product_model->findById($id, 'pr_id');
+
+                // Update Log
+                $this->log_model->addDesignLog($this->client->cl_id, 'User uploaded a design.', 'm/import/'.$product->pr_uid);
+
+                // Create Product Folders
+                if (!file_exists('./files/products/'.$product->pr_uid)){
+
+                    mkdir('./files/products/'.$product->pr_uid, 0777, true);
+
+                    // also copy index.html to stop direct access.
+                    $file = './files/products/index.html';
+                    @copy($file, './files/products/'.$product->pr_uid.'/index.html');
+                }
+
+                $product->pr_cl_id == $this->client->cl_id && redirect('m/import/' . $product->pr_uid);
+                redirect('m/designs', 'refresh');
+            }
+            else
+                die('<h1>Unable to upload design now! Try again later.</h1>');
+        }
+
+        $product = $this->product_model->findById($id);
+
+        if ($product == null) die('<h1>The file you requested has been moved!</h1>' . anchor('m/designs', 'Go Back to list &laquo;'));
+
+        $form   = array();
+        $msg    = '';
+
+        if ($this->input->post('title')){
+
+            $form['pr_status']      = 'designing';
+            $form['pr_title']       = $this->input->post('title');
+            $form['pr_description'] = $this->input->post('description');
+
+            $output_dir = './files/products/' . $product->pr_uid . '/';
+
+            // upload files.
+            if (isset($_FILES['preview'])){
+
+                $ImageName      = str_replace(' ','-',strtolower($_FILES['preview']['name']));
+                $ImageType      = $_FILES['preview']['type']; //"image/png", image/jpeg etc.
+     
+                $ImageExt       = substr($ImageName, strrpos($ImageName, '.'));
+                $ImageExt       = str_replace('.','',$ImageExt);
+                $ImageName      = preg_replace("/\.[^.\s]{3,4}$/", "", $ImageName);
+                $NewImageName   = 'preview.' . $ImageExt;
+     
+                if (move_uploaded_file($_FILES["preview"]["tmp_name"], $output_dir. $NewImageName)){
+                    $form['pr_preview'] = $ImageExt;                    
+                }
+                else{
+                    //error;
+                }
+            }
+
+            if (isset($_FILES['content'])){
+
+                $path   = $_FILES['content']['name'];
+                $ext    = pathinfo($path, PATHINFO_EXTENSION);
+
+                $config['upload_path']      = './files/products/' . $product->pr_uid . '/';
+                $config['allowed_types']    = 'psd|pdf';
+                $config['max_size']         = 1024 * 20;
+                $config['file_name']        = 'design.' . $ext;
+                $config['overwrite']        = TRUE;
+
+                $this->load->library('upload', $config);
+
+                if (!$this->upload->do_upload('content')){
+
+                    $error = array('error' => $this->upload->display_errors());
+                    //var_dump($error);
+                }
+                else{
+                    $form['pr_contents'] = $ext;
+                }
+            }
+
+            $this->product_model->save($form, $product->pr_uid);
+            redirect('m/import/' . $product->pr_uid);
+            die('Invalid access');
+        }
+
+        $data['title']      = 'Import your design';
+        $data['form']       = $form;
+        $data['msg']        = $msg;
+        $data['product']    = $product;
+        $data['d_types']    = $this->design_products_model->findAll();
+
+        $this->load->view('member/import', $data);
     }
 
     /**

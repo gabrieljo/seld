@@ -14,38 +14,46 @@ echo inc('m_publish.js');
 
 			<div class="product-preview">
 				<?php
-				/**
-				 * get total pages in the design. 
-				 */
-				$canvas = (object) array('page'=>1, 'fold'=>0);
-		        if ($product->pr_options != ''){
-		            
-		            $options = unserialize(@$product->pr_options);
 
-		            // get total pages.
-		            $pages = @$options['set-pages'];
-		            if ($product->pr_type == '2' || $product->pr_type == '1'){ // type leaflet or business card.
-		                $canvas->page = strtolower($pages) == 'single side' ? 1 : 2; // single side OR double side.
-
-		                // get folding lines
-		                $fold = @$options['set-folding-paper'];
-		                $canvas->fold = $fold == '' ? 0 : intval($fold);
-		            }
-		            else{
-		                $canvas->page = intval($pages) <= 0 ? 1 : intval($pages);
-		            }
-		        }
-				//$total_pages 	= intval($product->pr_type) == 2 ? ($canvas->page * ($canvas->fold + 1)) : $canvas->page;
-				$total_pages = $canvas->page;
-				$total_pages > 2 ? 2 : $total_pages;
-
-				$li = '';
-				for ($i=1; $i<=$total_pages; $i++){
-					$li.= sprintf('<li class="list-item-%d"><img src="%s" /></li>', $i, base_url().'files/products/'.$product->pr_uid.'/design/thumbs/page-' . $i . '.png');
+				if ($product->pr_src == 'upload'){
+					$type = 1;
+					$li = sprintf('<li class="list-item-1"><img src="%s" /></li>', base_url().'files/products/'.$product->pr_uid.'/preview.' . $product->pr_preview);
 				}
+				else{
+					/**
+					 * get total pages in the design. 
+					 */
+					$canvas = (object) array('page'=>1, 'fold'=>0);
+			        if ($product->pr_options != ''){
+			            
+			            $options = unserialize(@$product->pr_options);
 
-				$type = $total_pages > 4 ? 4 : $total_pages;
-				echo '<ul class="product_info product_info_preview_' . $type . '">' . $li . '</ul>';
+			            // get total pages.
+			            $pages = @$options['set-pages'];
+			            if ($product->pr_type == '2' || $product->pr_type == '1'){ // type leaflet or business card.
+			                $canvas->page = strtolower($pages) == 'single side' ? 1 : 2; // single side OR double side.
+
+			                // get folding lines
+			                $fold = @$options['set-folding-paper'];
+			                $canvas->fold = $fold == '' ? 0 : intval($fold);
+			            }
+			            else{
+			                $canvas->page = intval($pages) <= 0 ? 1 : intval($pages);
+			            }
+			        }
+					//$total_pages 	= intval($product->pr_type) == 2 ? ($canvas->page * ($canvas->fold + 1)) : $canvas->page;
+					$total_pages = $canvas->page;
+					$total_pages > 2 ? 2 : $total_pages;
+
+					$li = '';
+					for ($i=1; $i<=$total_pages; $i++){
+						$li.= sprintf('<li class="list-item-%d"><img src="%s" /></li>', $i, base_url().'files/products/'.$product->pr_uid.'/design/thumbs/page-' . $i . '.png');
+					}
+
+					$type = $total_pages > 4 ? 4 : $total_pages;
+				}
+				
+				echo '<ul class="product_info product_info_preview_' . $type . '">' . $li . '</ul>';			
 				?>				
 			</div>
 

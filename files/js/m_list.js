@@ -31,11 +31,19 @@ var design = {
 
 		var totalPages 	= $(this).attr('data-pages');
 		var folder 		= $(this).attr('data-target');
+		var type 		= $(this).attr('data-type');
 
 		var cls = totalPages <= 1 ? 'hidden' : '';
 		var html = '<div id="preview-main"><div id="preview-inner"></div></div><ul class="' + cls + '">';
-		for (var i=1; i<=totalPages; i++){
-			html+= '<li><img src="' + base_url() + 'files/products/' + folder + '/design/page-' + i + '.png?load=' + Math.random() + '" /></li>';
+
+		if (type == 'seld'){
+			for (var i=1; i<=totalPages; i++){
+				html+= '<li><img src="' + base_url() + 'files/products/' + folder + '/design/page-' + i + '.png?load=' + Math.random() + '" /></li>';
+			}			
+		}
+		else{
+			var ext = $(this).attr('data-ext');
+			html+= '<li><img src="' + base_url() + 'files/products/' + folder + '/preview.' + ext + '?load=' + Math.random() + '" /></li>';
 		}
 
 		setTimeout(function(){

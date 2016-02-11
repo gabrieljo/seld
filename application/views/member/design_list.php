@@ -7,7 +7,8 @@
 
 		<div class="col-md-12">
 			<h3 class="pull-left">My Designs</h3>
-			<button class="btn btn-sm btn-warning pull-right" style="margin-left:5px;" data-toggle="modal" data-target="#myThemes"><span class="glyphicon glyphicon-list"></span> From My Themes</button>
+			<button class="btn btn-sm btn-warning pull-right" style="margin-left:5px;" data-toggle="modal" data-target="#myThemes"><span class="glyphicon glyphicon-list"></span> From My Themes</button>			
+			<?=anchor('m/import', '<span class="glyphicon glyphicon-upload"></span> Upload', array('class'=>'btn btn-lg pull-right btn-sm btn-primary', 'style'=>'margin-left:5px;'))?>
 			<?=anchor('m/create', '<span class="glyphicon glyphicon-plus"></span> 디차인', array('class'=>'btn btn-lg pull-right btn-sm btn-success'))?>
 			<div class="cf"></div>
 			<hr>
@@ -62,7 +63,9 @@
 				                $canvas->page = intval($pages) <= 0 ? 1 : intval($pages);
 				            }
 				        }
-						$total_pages 	= $canvas->page; //intval($product->pr_type) == 2 ? ($canvas->page * ($canvas->fold + 1)) : $canvas->page;		
+						$total_pages 	= $canvas->page; //intval($product->pr_type) == 2 ? ($canvas->page * ($canvas->fold + 1)) : $canvas->page;
+
+						if ($product->pr_src == 'seld'){
 					?>
 					<tr class="<?=$cls?>">
 						<td><?=++$sn?></td>
@@ -97,7 +100,7 @@
 						<td>
 							<?php
 								if (file_exists('./files/products/' . $product->pr_uid . '/design/page-1.png')){
-									echo '<button class="btn btn-sm btn-info preview" data-target="' . $product->pr_uid . '" data-pages="' . $total_pages . '"><span class="glyphicon glyphicon-eye-open"></span> Preview</button>';
+									echo '<button class="btn btn-sm btn-info preview" data-target="' . $product->pr_uid . '" data-type="seld" data-pages="' . $total_pages . '"><span class="glyphicon glyphicon-eye-open"></span> Preview</button>';
 
 									if ($status == 'designing'){
 										echo '&nbsp;';
@@ -108,6 +111,45 @@
 						</td>
 					</tr>					
 					<?php
+					}
+					else{
+					?>
+					<tr class="<?=$cls?>">
+						<td><?=++$sn?></td>
+						<td>
+							<?php					
+
+							echo anchor('m/delete/' . $product->pr_uid . '/' . $tb, '<span class="glyphicon glyphicon-trash"></span> Delete', array('class'=>'btn btn-danger btn-sm pull-right btnDelete', 'title'=>'Delete Design'));
+
+							// product title with open link.
+							$title = ($product->pr_title == '') ? 'No Import Title' : $product->pr_title;
+							echo ($status == 'new' || $status == 'designing') ? anchor('m/import/' . $product->pr_uid, '<strong class="text-primary">'.$title.'</strong>', array('title'=>'Click to Edit')) : '<strong class="text-danger"><i>'.$title.'</i></strong>';
+							?>
+							
+							<p class="text-muted"><?=$product->pr_description?></p>
+							<i class="text-muted" style="font-size:9px;">
+								<small>Created</small>: <?=$product->pr_created_at?>
+								<?php
+								if ($product->pr_updated_at != ''){
+									echo ', Last Updated: ' . $product->pr_updated_at;
+								}
+								?>
+							</i>
+						</td>
+						<td><strong class="text-<?=$cls?>"><?=ucfirst($status)?></strong></td>
+						<td>User Upload</td>
+						<td>
+							<?php
+								if ($product->pr_preview != '' && file_exists('./files/products/' . $product->pr_uid . '/preview.' . $product->pr_preview)){
+									echo '<button class="btn btn-sm btn-info preview" data-target="' . $product->pr_uid . '" data-type="upload" data-ext="' . $product->pr_preview . '" data-pages="1"><span class="glyphicon glyphicon-eye-open"></span> Preview</button>';
+									echo '&nbsp;';
+									echo anchor('m/publish/' . $product->pr_uid, '<span class="glyphicon glyphicon-check"></span> Publish ', array('class'=>'btn btn-sm btn-success'));
+								}
+							?>
+						</td>
+					</tr>
+					<?php
+					}
 					endforeach;
 					?>
 				</tbody>
