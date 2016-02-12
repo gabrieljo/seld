@@ -24,11 +24,6 @@ class P extends CI_Controller {
         $this->load->view('about', $data);
     }
 
-    public function contact(){
-        $data['title'] = 'Contact TruthCRM';
-        $this->load->view('contact', $data);
-    }
-
     /**
      * this method will display a login form for the user.
      * if successful, redirect to controller "u"
@@ -163,7 +158,63 @@ class P extends CI_Controller {
      * this will deal with the forgot password section.
      */
     public function forgot_password(){
-        $data['title'] = 'Forgot Password Member :: TruthCRM';
+
+        $msg = 'Enter your email address to reset your password.';
+
+        if ($this->input->post('email')){
+
+            $email = $this->input->post('email');
+
+            $client = $this->client_model->findById($email, 'cl_email');
+            if ($client){
+
+                $token = md5(time().rand(100000, 999999999));
+                $form = array(
+                        'cl_password_token'     => $token,
+                        'cl_token_created_at'   => date('Y-m-d H:i:s')
+                    );
+                $this->client_model->save($form, $client->cl_uid);
+
+                // Send email confirmation.
+                /*$this->load->library('email');
+
+                $config['protocol']     = 'sendmail';
+                $config['mailpath']     = '/usr/sbin/sendmail';
+                $config['charset']      = 'iso-8859-1';
+                $config['wordwrap']     = TRUE;
+                $config['mailtype']     = 'html';
+
+                $this->email->initialize($config);
+
+                $this->email->from('info@seld.or.kr', 'Seld Creative');
+                $this->email->to($client->cl_email); 
+
+                $this->email->subject('Registration :: Verify Email Address');
+                $this->email->message('
+                                    <br>Seld Creative Editor<br>
+                                    <h1>Password Change Request.</h1><hr />
+                                    You had recently requested for your SELD password change. </strong>. 
+                                    <br><hr />
+                                    Your temporary password is
+                                    <h3>' . $token . '</h3>
+                                    <br/>
+                                    Please login to SELD using the following temporary password and change your password. 
+                                    ' . anchor('p/login', 'Click to Login here.') . '.
+                                    <br><br>
+                                    <i>Please ignore this email, if you did not register to us.</i>
+                                    <hr />
+                                '); 
+
+                $this->email->send();*/
+
+                $id = $client == null ? '' : $client->cl_uid;
+                redirect('p/password_reset_request/' . $id, 'refresh');
+            }
+        }
+
+        $data['title']  = 'Forgot Password Member';
+        $data['msg']    = $msg;
+
         $this->load->view('forgot', $data);
     }
 
@@ -218,49 +269,65 @@ class P extends CI_Controller {
             // successful
             // SHA1 encrypt password
             $this->load->library('encrypt');
-
             $form['cl_password'] = $this->encrypt->sha1($this->input->post('password'));
-            
-            if ($this->client_model->save($form)){
 
-                /**
-                 * Send confirmation Email.
-                 */
-                $id         = $this->db->insert_id();
-                $client     = $this->client_model->findById($id, 'cl_id');
+            /**
+             * check for already-registered email address.
+             */
+            if ($form['cl_email'] == ''){
+                $msg = 'Enter your email address to continue.';
+            }
+            else{
+                
+                $old_reg = $this->client_model->findById($form['cl_email'], 'cl_email');
+                if ($old_reg){
+                    $msg = 'Email address already exists.';
+                }
+                else{
 
-                /**
-                 * Email Library
-                 */
-                /*$this->load->library('email');
+                    // Register.
+                    if ($this->client_model->save($form)){
 
-                $config['protocol']     = 'sendmail';
-                $config['mailpath']     = '/usr/sbin/sendmail';
-                $config['charset']      = 'iso-8859-1';
-                $config['wordwrap']     = TRUE;
-                $config['mailtype']     = 'html';
+                        /**
+                         * Send confirmation Email.
+                         */
+                        $id         = $this->db->insert_id();
+                        $client     = $this->client_model->findById($id, 'cl_id');
 
-                $this->email->initialize($config);
+                        /**
+                         * Email Library
+                         */
+                        /*$this->load->library('email');
 
-                $this->email->from('info@seld.or.kr', 'Seld Creative');
-                $this->email->to($client->cl_email); 
+                        $config['protocol']     = 'sendmail';
+                        $config['mailpath']     = '/usr/sbin/sendmail';
+                        $config['charset']      = 'iso-8859-1';
+                        $config['wordwrap']     = TRUE;
+                        $config['mailtype']     = 'html';
 
-                $this->email->subject('Registration :: Verify Email Address');
-                $this->email->message('
-                                    <br>Seld Creative Editor<br>
-                                    <h1>Thanks for registering to SELD.</h1><hr />
-                                    You are now a member of our <strong>SELD community</strong>. 
-                                    <br>
-                                    Please verify your email address by <a href="http://localhost/ce/git/seld/p/verify/' . $client->cl_uid . '/' . md5($client->cl_created_at) . '" target="_blank">clicking here</a>.
-                                    <br><br>
-                                    <i>Please ignore this email, if you did not register to us.</i>
-                                    <hr />
-                                '); 
+                        $this->email->initialize($config);
 
-                $this->email->send();*/
+                        $this->email->from('info@seld.or.kr', 'Seld Creative');
+                        $this->email->to($client->cl_email); 
 
-                $client != null && redirect('p/verify_email/' . $client->cl_uid, 'refresh');
-                $msg = 'Unable to send confirmation.';
+                        $this->email->subject('Registration :: Verify Email Address');
+                        $this->email->message('
+                                            <br>Seld Creative Editor<br>
+                                            <h1>Thanks for registering to SELD.</h1><hr />
+                                            You are now a member of our <strong>SELD community</strong>. 
+                                            <br>
+                                            Please verify your email address by <a href="http://localhost/ce/git/seld/p/verify/' . $client->cl_uid . '/' . md5($client->cl_created_at) . '" target="_blank">clicking here</a>.
+                                            <br><br>
+                                            <i>Please ignore this email, if you did not register to us.</i>
+                                            <hr />
+                                        '); 
+
+                        $this->email->send();*/
+
+                        $client != null && redirect('p/verify_email/' . $client->cl_uid, 'refresh');
+                        $msg = 'Unable to send confirmation.';
+                    }
+                }                
             }
         }
 
@@ -338,6 +405,31 @@ class P extends CI_Controller {
             $data['message']    = 'You have successfully verified your email address.<br />Please login with your email and password to view your SELD profile. <br /><br />' . anchor('p/login', 'Click here to login') . '<hr /><div class="text-center"><i>You have to verify your email address only once.</i></div>';
             $data['class']      = 'success';
             
+        }
+
+        $this->response($data);            
+    }
+
+    /**
+     * this will respond to user's signup by showing email verification message.
+     */
+    public function password_reset_request($client_uid=''){
+
+        $client = $this->client_model->findById($client_uid);
+        $data   = array();
+
+        if ($client != null){
+            
+            $data['title']      = 'Password Change Request';
+            $data['heading']    = '<span class="glyphicon glyphicon-ok"></span> Success!';
+            $data['message']    = 'Please check your email address for your temporary password. You should change your password after logging in with your temporary password.<br /><br />' . anchor('p/login', 'Click here to login') . '';
+            $data['class']      = 'success';
+        }
+        else{
+            $data['title']      = 'Password Change Request Failed';
+            $data['heading']    = '<span class="glyphicon glyphicon-remove"></span> Error!';
+            $data['message']    = 'Your request for temporary password was not successful.<br /><br />' . anchor('p/forgot_password', 'Click here to try again') . '';
+            $data['class']      = 'danger';
         }
 
         $this->response($data);            
