@@ -993,6 +993,7 @@
 				// Invalidate/Trigger Canvas Click.
 				$('#pad').trigger('click');
 				//step._loadPage();
+				step._loadProgress();
 				$('.canvas_file_info.overlay, .canvas_status_saving').addClass('hidden');
 			}, 500);
 		}

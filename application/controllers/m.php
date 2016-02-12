@@ -262,6 +262,8 @@ class M extends CI_Controller {
 
         if ($product == null) die('<h1>The file you requested has been moved!</h1>' . anchor('m/designs', 'Go Back to list &laquo;'));
 
+        $product->pr_src == 'upload' && redirect('m/import/' . $product->pr_uid);
+
         /**
          * get product properties if available.
          * Override default values if option is available.
@@ -378,6 +380,7 @@ class M extends CI_Controller {
         $product = $this->product_model->findById($id);
 
         if ($product == null) die('<h1>The file you requested has been moved!</h1>' . anchor('m/designs', 'Go Back to list &laquo;'));
+        $product->pr_src == 'seld' && redirect('m/create/' . $product->pr_uid);
 
         $form   = array();
         $msg    = '';
