@@ -24,13 +24,15 @@ $id = !get_cookie(APP_MEMBER.'_member') ? null : get_cookie(APP_MEMBER.'_member'
 
 if ($id === null){
 	$quick_links['p/login'] 	= '로그인';
+	$quick_links['m/register'] = '회원가입';
 	$home_link = '';
 }
 else{
 	$quick_links['m/logout'] 	= 'Logout';
+	$quick_links['m/'] = '내정보';
 	$home_link = 'm';
 }
-$quick_links['m/index'] = '회원가입';
+
 
 ?>
 <!DOCTYPE html>

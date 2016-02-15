@@ -14,7 +14,7 @@
 					<div class="wrapper">
 						<div class="link-title">User Create New Design.</div>
 						<div class="link-desc">누구나 손쉽게 디자인<br>할 수 있는 SELD를<br>사용해보세요</div>
-						<?=anchor('m/create', '디차인 <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-info btn-sm pull-right'))?>
+						<?=anchor('m/create', '디자인 <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-info btn-sm pull-right'))?>
 					</div>
 				</li>
 				<li>
@@ -25,7 +25,7 @@
 				<li>
 					<div class="wrapper">
 						<div class="link-desc">저장한 디자인</div>
-						<?=anchor('m/designs', 'List <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-info btn-sm pull-right'))?>					
+						<?=anchor('m/designs', '목록보기 <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-info btn-sm pull-right'))?>					
 					</div>
 				</li>
 				<li>
