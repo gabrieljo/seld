@@ -1489,7 +1489,9 @@
 				// Hide the overlay.
 				$('.canvas_file_info').addClass('hidden');
 
-				location.reload(true);
+				setTimeout(function(){
+					location.reload(true);					
+				}, 900);
 			}
 			return false;
 		});
