@@ -2,22 +2,63 @@
 
 <div class="n_container">
 	<div class="container">
-		<h1>About SELD</h1><hr>
-		<p>
-			The standard Lorem Ipsum passage, used since the 1500s <br>
-
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." <br>1
-
-Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC <br><br>
-
-"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" <br>
-
-1914 translation by H. Rackham <br><br>
-
-"But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?" <br>
-
-Section 1.10.33 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC <br>
-		</p>
+		<div class="about-main-bg">
+			<div class="about-main-group">
+				<div id="about-main-title">Life is too short.</div>
+				<div id="about-main-desc">SELD와 함께라면, 누구나 훌륭한 디자이너가 될 수 있습니다.</div>	
+				<a id="video-play">
+					<i class="glyphicon glyphicon-triangle-right"></i>
+				</a>
+				<a href="#" class="btn btn-primary"><i class="glyphicon glyphicon-picture"></i> SELD 디자인 하기</a>
+				<a href="#" class="btn btn-primary"><i class="glyphicon glyphicon-list-alt"></i> SELD 테플릿 보기</a>
+				<a href="#" class="btn btn-primary"><i class="glyphicon glyphicon-shopping-cart"></i> SELD 마켓 보기</a>
+			</div>
+		</div>
+		<div class="about-contents">
+			<div class="first-row">
+				<div class="col-sm-6">
+					<div id="title">SELD 템플릿</div>
+					<div id="desc">
+						<p>
+							수백여가지의 템플릿으로 디자이너가 없어도 <br/>
+							자신만의 독특한 디자인을 만들 수 있습니다.<br/>
+							SELD에서 제공하는 템플릿과 이미지를 무료로<br/>
+							사용하세요.
+						</p>
+					</div>
+				</div>
+				<div class="col-sm-6" style="text-align: center;">
+					<?=inc('about/1-article.jpg', array('alt'=>'SELD 템플릿 이미지'))?>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="second-row">
+				<div class="col-sm-6" style="text-align: center;"><?=inc('about/2-article.jpg', array('alt'=>'SELD 마켓 이미지'))?></div>
+				<div class="col-sm-6">
+					<div class="contents">
+						<div id="title">SELD의 간편한 디자인</div>
+						<div id="desc">
+							<p>
+								복잡하지 않는 간단한 절차, 손쉬운 디자인<br/>
+								회원가입만 하면 언제 어디서든 나만의 디자인을.<br/>
+								<br/>
+							</p>
+						</div>
+					</div>
+					<div class="contents">
+						<div id="title">내 디자인을 마켓에</div>
+						<div id="desc">
+							<p>
+								나만의 디자인을 마켓에 판매할수 있습니다.<br/>
+								디자인을 마켓에 올려 판매 및 고용을 하여<br/>
+								새로운 문화를 창출 해보세요.<br/>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>		
+		</div>
 	</div>
 </div>
 
