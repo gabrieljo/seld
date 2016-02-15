@@ -34,7 +34,18 @@ class M extends CI_Controller {
         $this->load->model('article_model');
         $this->load->model('favourite_model');
         $this->load->model('purchase_model');
+        
+        $this->load->helper('date');
 
+        $update_date = date("Ymd", strtotime( $this->client->cl_updated_at ) ); 
+
+        $now_date = date("Ymd"); 
+        $rent_num = mktime(0,0,0,substr($update_date,4,2),substr($update_date,6,2),substr($update_date,0,4)); 
+        $now_num = mktime(0,0,0,substr($now_date,4,2),substr($now_date,6,2),substr($now_date,0,4)); 
+        $gap = $now_num - $rent_num; 
+
+        $data['update_date'] = ($gap/(24*60*60));
+        
         $data['title']      = sprintf('Member Dashboard :: %s %s', $this->client->cl_firstname, $this->client->cl_lastname);
         $data['logs']       = $this->log_model->getLogs($this->client->cl_id, 3);
         $data['qnas']       = $this->article_model->findAllArticles('qna', '', 3);

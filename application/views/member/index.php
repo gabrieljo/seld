@@ -36,8 +36,13 @@
 				<li>
 					<div class="wrapper bg-lock">
 						<div class="link-desc">비밀번호 변경 알림</div>
-						<div class="link-title">회원님의 아이디 nebby은<br>비밀번호 변경 대상입니다.</div>
-						<?=anchor('m/profile', 'List <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-sm pull-right', 'style'=>'position:relative;top:-30px;color:#fff;'))?>
+						<?php if($update_date > 90){?>
+							
+							<div class="link-title">회원님의 아이디 <?=anchor('m/profile', $client->cl_email)?>은<br>비밀번호 변경 대상입니다.</div>
+							<?=anchor('m/profile', 'List <span class="glyphicon glyphicon-triangle-right"></span>', array('class'=>'btn btn-sm pull-right', 'style'=>'position:relative;top:-30px;color:#fff;'))?>
+						<?php }else{?>
+							<div class="" role="alert"><?= 90 - $update_date ?> 일 후에 비밀번호를 변경하셔야 합니다.</div>
+						<?php }?>
 					</div>
 				</li>
 			</ul>
