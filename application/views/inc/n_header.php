@@ -14,8 +14,8 @@ $title = isset($title) ? $title : SITE_TITLE;
 		);*/
 
 $navs = array();
-$navs['p/login'] 	= 'SELD 하기';
-$navs['p/about'] 	= '둘러보기';
+$navs['p/about'] 	= 'SELD 시작하기';
+// $navs['p/about'] 	= '둘러보기';
 $navs['market'] 	= 'SELD 마켓';
 $navs['market/cart'] 	= 'SELD 의뢰하기';
 

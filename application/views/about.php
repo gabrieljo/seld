@@ -16,7 +16,7 @@
 		</div>
 		<div class="about-contents">
 			<div class="first-row">
-				<div class="col-sm-6">
+				<div class="col-sm-6" style=" padding: 0 90px;">
 					<div id="title">SELD 템플릿</div>
 					<div id="desc">
 						<p>
@@ -34,7 +34,7 @@
 			</div>
 			<div class="second-row">
 				<div class="col-sm-6" style="text-align: center;"><?=inc('about/2-article.jpg', array('alt'=>'SELD 마켓 이미지'))?></div>
-				<div class="col-sm-6">
+				<div class="col-sm-6" style=" padding: 0 90px;">
 					<div class="contents">
 						<div id="title">SELD의 간편한 디자인</div>
 						<div id="desc">
